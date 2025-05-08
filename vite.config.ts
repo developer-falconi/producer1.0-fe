@@ -12,7 +12,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: 'built',
+    outDir: 'build',
     rollupOptions: {
       output: {
         manualChunks: undefined,

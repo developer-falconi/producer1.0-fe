@@ -1,7 +1,6 @@
 import { ApiResponse, Producer } from "@/types/api";
 
-const API_URL = `https://ticketera-be-prod-56736542635.southamerica-east1.run.app/api`;
-// const API_URL = `http:/localhost:4000/api`;
+const API_URL = import.meta.env.VITE_APP_API_BE;
 
 export async function fetchProducerData(): Promise<ApiResponse<Producer>> {
   try {

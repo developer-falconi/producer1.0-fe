@@ -99,7 +99,16 @@ const App: React.FC = () => {
   return (
     <>
       <DynamicFavicon producer={producer} />
-      <Toaster position="bottom-right" />
+      <Toaster
+        richColors
+        expand
+        toastOptions={{
+          classNames: {
+            toast:
+              "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg group-[.toaster]:pointer-events-auto",
+          },
+        }}
+      />
 
       <div className="min-h-screen w-full bg-gradient-to-b from-gray-900 to-gray-800">
         <Navbar

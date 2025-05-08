@@ -23,22 +23,22 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetDate }) => {
       <div className="flex justify-start gap-4">
         <div className="bg-black/70 w-20 h-20 flex flex-col items-center justify-center rounded-md">
           <span className="text-white text-3xl font-bold">{timeRemaining.days}</span>
-          <span className="text-purple-300 text-sm">Days</span>
+          <span className="text-white text-sm">Days</span>
         </div>
         
         <div className="bg-black/70 w-20 h-20 flex flex-col items-center justify-center rounded-md">
           <span className="text-white text-3xl font-bold">{timeRemaining.hours}</span>
-          <span className="text-purple-300 text-sm">Hours</span>
+          <span className="text-white text-sm">Hours</span>
         </div>
         
         <div className="bg-black/70 w-20 h-20 flex flex-col items-center justify-center rounded-md">
           <span className="text-white text-3xl font-bold">{timeRemaining.minutes}</span>
-          <span className="text-purple-300 text-sm">Minutes</span>
+          <span className="text-white text-sm">Minutes</span>
         </div>
         
         <div className="bg-black/70 w-20 h-20 flex flex-col items-center justify-center rounded-md">
           <span className="text-white text-3xl font-bold">{timeRemaining.seconds}</span>
-          <span className="text-purple-300 text-sm">Seconds</span>
+          <span className="text-white text-sm">Seconds</span>
         </div>
       </div>
     </div>

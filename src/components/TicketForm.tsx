@@ -134,7 +134,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
       const result = await submitTicketForm(submitData, event.id);
 
       if (result.success) {
-        toast.success("Entradas solicitadas");
+        toast.success("Entradas solicitadas. Una vez validado tu pago te las enviaremos en un mail");
 
         // Reset form
         setFormStep(0);
@@ -157,7 +157,6 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
 
   const renderStepContent = () => {
     if (formStep === 0) {
-      // Ticket quantity selection
       return (
         <div className="space-y-4 text-white">
           <div>
@@ -191,7 +190,6 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
         </div>
       );
     } else if (formStep <= formData.participants.length) {
-      // Participant information
       const participantIndex = formStep - 1;
       const participant = formData.participants[participantIndex];
 
@@ -268,7 +266,6 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
         </div>
       );
     } else {
-      // Final step - Email and Payment Proof
       return (
         <div className="space-y-4 text-white">
           <h3 className="text-lg font-semibold text-white">
@@ -362,14 +359,14 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
       <div className="mb-4">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold text-white">Entradas</h2>
-          <div className="text-sm text-purple-300">
+          <div className="text-sm text-green-600">
             Paso {formStep + 1} de {formData.participants.length + 2}
           </div>
         </div>
 
         <div className="w-full bg-gray-800 h-1 rounded-full overflow-hidden">
           <div
-            className="bg-purple-600 h-full transition-all duration-300 ease-in-out"
+            className="bg-green-600 h-full transition-all duration-300 ease-in-out"
             style={{
               width: `${((formStep + 1) / (formData.participants.length + 2)) * 100}%`
             }}

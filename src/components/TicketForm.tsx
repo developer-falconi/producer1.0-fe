@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Event, GenderEnum, Participant, SpinnerSize, TicketFormData } from '../types/api';
+import { Event, GenderEnum, Participant, Prevent, SpinnerSize, TicketFormData } from '../types/api';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,13 +7,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { submitTicketForm } from '../services/api';
 import Spinner from './Spinner';
 import { toast } from 'sonner';
+import { formatPrice } from '@/lib/utils';
 
 interface TicketFormProps {
   event: Event;
   onGetTickets: () => void;
+  prevent?: Prevent;
 }
 
-const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets }) => {
+const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent }) => {
   const [ticketCount, setTicketCount] = useState<number>(1);
   const [formStep, setFormStep] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -325,11 +327,42 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets }) => {
 
   return (
     <div className="bg-black/50 backdrop-blur-sm p-6 rounded-lg shadow-lg w-full max-w-md">
+      {prevent && (
+        <div className="flex flex-col gap-2 mb-2">
+          <p className="text-green-800 text-2xl font-bold">
+            {prevent.name}: {formatPrice(prevent.price)}
+          </p>
+          <div className="flex items-start gap-2"> {/* Use a flex container */}
+            <p className="text-white font-bold text-lg m-0 min-w-[50px] sm:min-w-[70px] md:min-w-[80px] lg:min-w-[90px]">
+              Alias:
+            </p>
+            {event.alias ? (
+              event.alias.includes('/') ? (
+                <div className="flex flex-col">
+                  {event.alias.split('/').map((part, index) => (
+                    <span key={index} className="text-white text-lg text-start">
+                      {part.trim()}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-white text-lg m-0">
+                  {event.alias.trim()}
+                </p>
+              )
+            ) : (
+              <p className="text-gray-500 text-lg m-0">
+                No Alias
+              </p>
+            )}
+          </div>
+        </div>
+      )}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-white">Get Tickets</h2>
+          <h2 className="text-2xl font-bold text-white">Entradas</h2>
           <div className="text-sm text-purple-300">
-            Step {formStep + 1} of {formData.participants.length + 2}
+            Paso {formStep + 1} de {formData.participants.length + 2}
           </div>
         </div>
 

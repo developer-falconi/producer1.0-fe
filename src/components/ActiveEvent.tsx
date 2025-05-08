@@ -11,7 +11,7 @@ interface ActiveEventProps {
 
 const ActiveEvent: React.FC<ActiveEventProps> = ({ event, onGetTickets }) => {
   return (
-    <div className="w-full md:w-1/2 z-10 p-6">
+    <div className="w-full md:w-1/2 z-10 p-2">
       <div className="inline-block px-4 py-1 bg-green-800 rounded-full mb-4">
         <p className="text-white font-medium">Active Event</p>
       </div>
@@ -27,14 +27,14 @@ const ActiveEvent: React.FC<ActiveEventProps> = ({ event, onGetTickets }) => {
           </svg>
           <p>{formatDate(event.startDate)}</p>
         </div>
-        
+
         <div className="flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <p>{formatTime(event.startDate)}</p>
         </div>
-        
+
         <div className="flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -44,13 +44,14 @@ const ActiveEvent: React.FC<ActiveEventProps> = ({ event, onGetTickets }) => {
         </div>
       </div>
 
-      <p className="text-gray-200 mb-8">{event.description}</p>
+      <p className="text-gray-200 mb-6">{event.description}</p>
 
       <CountdownTimer targetDate={event.startDate} />
 
-      <div className="mt-8">
-        <Button 
+      <div className="mt-6">
+        <Button
           onClick={onGetTickets}
+          disabled={event.prevents.length === 0}
           className="px-8 py-3 bg-green-800 hover:bg-green-700 text-white rounded-md text-lg transition-all duration-300 transform hover:scale-105"
         >
           Obtener Tickets

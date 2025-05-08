@@ -50,7 +50,27 @@ export interface Event {
   logo: string;
   createdAt: string;
   updatedAt: string;
-  prevents: any[];
+  prevents: Prevent[];
+}
+
+export interface Prevent {
+  id: number;
+  name: string;
+  price: string;
+  quantity: number;
+  status: PreventStatusEnum;
+  startDate: Date;
+  endDate: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export enum PreventStatusEnum {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+  SOLD_OUT = 'SOLD_OUT',
 }
 
 export interface User {

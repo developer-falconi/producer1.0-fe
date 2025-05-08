@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { fetchProducerData } from './services/api';
-import { Event, EventStatus, Producer } from './types/api';
+import { Event, EventStatus, PreventStatusEnum, Producer } from './types/api';
 import Navbar from './components/Navbar';
 import Spinner from './components/Spinner';
 import ActiveEvent from './components/ActiveEvent';
@@ -16,6 +16,7 @@ const App: React.FC = () => {
   const [producer, setProducer] = useState<Producer | null>(null);
   const [activeEvent, setActiveEvent] = useState<Event | null>(null);
   const [showTicketForm, setShowTicketForm] = useState<boolean>(false);
+  const ticketFormRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -56,13 +57,33 @@ const App: React.FC = () => {
 
   const toggleTicketForm = () => {
     setShowTicketForm(!showTicketForm);
+    if (!showTicketForm && window.innerWidth < 768 && ticketFormRef.current) {
+      const formTop = ticketFormRef.current.getBoundingClientRect().top + window.scrollY;
+      const screenHeight = window.innerHeight;
+      const scrollToPosition = formTop - (screenHeight / 2) + (ticketFormRef.current.offsetHeight / 2);
+
+      window.scrollTo({
+        top: scrollToPosition,
+        behavior: 'smooth',
+      });
+    }
   };
+
+  const handleScrollToFormFromNavbar = () => {
+    toggleTicketForm();
+  };
+
+  const lastActivePrevent = useMemo(() =>
+    activeEvent?.prevents
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .find((prevent) => prevent.status === PreventStatusEnum.ACTIVE),
+    [activeEvent])
 
   if (loading) {
     return (
       <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800">
         <Spinner />
-        <p className="mt-4 text-white text-xl">Loading event information...</p>
+        <p className="mt-4 text-white text-xl">Cargando...</p>
       </div>
     );
   }
@@ -70,7 +91,7 @@ const App: React.FC = () => {
   if (!producer || !activeEvent) {
     return (
       <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800">
-        <p className="text-white text-xl">No active events found.</p>
+        <p className="text-white text-xl">No se encontro la info del productor.</p>
       </div>
     );
   }
@@ -81,14 +102,18 @@ const App: React.FC = () => {
       <Toaster position="bottom-right" />
 
       <div className="min-h-screen w-full bg-gradient-to-b from-gray-900 to-gray-800">
-        <Navbar logo={producer.logo} producerName={producer.name} />
+        <Navbar
+          logo={producer.logo}
+          producerName={producer.name}
+          onScrollToForm={handleScrollToFormFromNavbar}
+        />
 
         <div className="min-h-screen w-full flex flex-col md:flex-row items-center justify-center pt-20 px-4 relative overflow-hidden">
           {/* Background image with overlay */}
           <div
             className="absolute inset-0 bg-cover bg-center z-0"
             style={{
-              backgroundImage: `url(${activeEvent.logo})`,
+              backgroundImage: `url(${producer.logo})`,
               filter: 'brightness(0.3) contrast(1.2)'
             }}
           />
@@ -102,7 +127,10 @@ const App: React.FC = () => {
             />
 
             {/* Event flyer/logo or Ticket Form */}
-            <div className="w-full md:w-1/2 flex justify-center items-center p-4 mt-8 md:mt-0 relative min-h-[600px]">
+            <div
+              ref={ticketFormRef}
+              className="w-full md:w-1/2 flex justify-center items-center p-4 mt-8 md:mt-0 relative min-h-[400px]"
+            >
               <div className={cn(
                 'absolute inset-0 flex justify-center items-center transition-all',
                 'duration-500 ease-in-out',
@@ -119,13 +147,14 @@ const App: React.FC = () => {
 
               <div
                 className={cn(
-                  'absolute inset-0 flex justify-center items-center transition-all duration-500 ease-in-out',
+                  'absolute inset-0 flex flex-col gap-4 justify-center items-center transition-all duration-500 ease-in-out',
                   showTicketForm ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
                 )}
               >
                 <TicketForm
                   event={activeEvent}
                   onGetTickets={toggleTicketForm}
+                  prevent={lastActivePrevent}
                 />
               </div>
             </div>

@@ -78,3 +78,14 @@ export const eventStatusLabels: Record<EventStatus, string> = {
 export const translateEventStatus = (status: EventStatus): string => {
   return eventStatusLabels[status] || status;
 };
+
+export const formatPrice = (price: string | number): string => {
+  const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
+
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(numericPrice);
+};

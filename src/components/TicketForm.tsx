@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Event, GenderEnum, Participant, Prevent, SpinnerSize, TicketFormData } from '../types/api';
+import { Event, GenderEnum, Participant, Prevent, SpinnerSize, TicketFormData } from '../types/types';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -144,6 +144,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
           email: '',
           comprobante: null
         });
+        onGetTickets();
       } else {
         toast.error("Error enviando información");
       }
@@ -308,7 +309,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
             <Button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="w-1/2 bg-green-800 hover:bg-green-700"
+              className="w-1/2 bg-green-800 hover:bg-green-700 flex gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -329,7 +330,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
     <div className="bg-black/50 backdrop-blur-sm p-6 rounded-lg shadow-lg w-full max-w-md">
       {prevent && (
         <div className="flex flex-col gap-2 mb-2">
-          <p className="text-green-800 text-2xl font-bold">
+          <p className="text-2xl font-bold text-green-600">
             {prevent.name}: {formatPrice(prevent.price)}
           </p>
           <div className="flex items-start gap-2"> {/* Use a flex container */}

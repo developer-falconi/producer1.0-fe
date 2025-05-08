@@ -1,5 +1,5 @@
 import React from 'react';
-import { Event, EventStatus } from '@/types/api';
+import { Event, EventStatus } from '@/types/types';
 import { cn, formatDate, getEventStatusStyles, translateEventStatus } from '@/lib/utils';
 
 interface EventsListProps {

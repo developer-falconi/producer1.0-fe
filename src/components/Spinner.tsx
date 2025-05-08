@@ -1,5 +1,5 @@
 import React from 'react';
-import { SpinnerSize } from '@/types/api';
+import { SpinnerSize } from '@/types/types';
 
 interface SpinnerProps {
   size?: SpinnerSize;

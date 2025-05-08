@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Producer } from '@/types/api';
+import { Producer } from '@/types/types';
 
 interface Props {
   producer: Producer | null;

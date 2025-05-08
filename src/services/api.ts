@@ -1,4 +1,4 @@
-import { ApiResponse, Producer } from "@/types/api";
+import { ApiResponse, Producer } from "@/types/types";
 
 const API_URL = import.meta.env.VITE_APP_API_BE;
 

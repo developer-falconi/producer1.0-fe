@@ -1,4 +1,4 @@
-import { EventStatus } from "@/types/api";
+import { EventStatus } from "@/types/types";
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 

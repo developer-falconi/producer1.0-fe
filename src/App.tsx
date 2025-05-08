@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { fetchProducerData } from './services/api';
-import { Event, EventStatus, PreventStatusEnum, Producer } from './types/api';
+import { Event, EventStatus, PreventStatusEnum, Producer } from './types/types';
 import Navbar from './components/Navbar';
 import Spinner from './components/Spinner';
 import ActiveEvent from './components/ActiveEvent';
@@ -129,7 +129,7 @@ const App: React.FC = () => {
             {/* Event flyer/logo or Ticket Form */}
             <div
               ref={ticketFormRef}
-              className="w-full md:w-1/2 flex justify-center items-center p-4 mt-8 md:mt-0 relative min-h-[400px]"
+              className="w-full md:w-1/2 flex justify-center items-center p-4 mt-8 md:mt-0 relative min-h-[700px]"
             >
               <div className={cn(
                 'absolute inset-0 flex justify-center items-center transition-all',

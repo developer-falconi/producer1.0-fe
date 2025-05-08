@@ -1,4 +1,4 @@
-import { Producer } from '@/types/api';
+import { Producer } from '@/types/types';
 import React from 'react';
 
 interface ContactProps {

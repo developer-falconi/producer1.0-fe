@@ -1,5 +1,5 @@
 import React from 'react';
-import { Event } from '@/types/api';
+import { Event } from '@/types/types';
 import { formatDate, formatTime } from '@/lib/utils';
 import CountdownTimer from './CountdownTimer';
 import { Button } from './ui/button';

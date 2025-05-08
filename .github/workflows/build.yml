@@ -28,7 +28,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          VITE_APP_API_BE: ${{ secret.VITE_APP_API_BE }}
+          VITE_APP_API_BE: ${{ secrets.VITE_APP_API_BE }}
           CI: true
 
       - name: Configure Git for commit

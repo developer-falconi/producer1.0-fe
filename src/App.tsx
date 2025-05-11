@@ -31,8 +31,8 @@ const App: React.FC = () => {
           const active = response.data.events.find(
             event => event.status === EventStatus.ACTIVE
           );
-
           if (active) {
+            active.prevents = []
             setActiveEvent(active);
           }
         }
@@ -56,16 +56,18 @@ const App: React.FC = () => {
   }, [producer]);
 
   const toggleTicketForm = () => {
-    setShowTicketForm(!showTicketForm);
-    if (!showTicketForm && window.innerWidth < 768 && ticketFormRef.current) {
-      const formTop = ticketFormRef.current.getBoundingClientRect().top + window.scrollY;
-      const screenHeight = window.innerHeight;
-      const scrollToPosition = formTop - (screenHeight / 2) + (ticketFormRef.current.offsetHeight / 2);
+    if (activeEvent && activeEvent?.prevents.length > 0) {
+      setShowTicketForm(!showTicketForm);
+      if (!showTicketForm && window.innerWidth < 768 && ticketFormRef.current) {
+        const formTop = ticketFormRef.current.getBoundingClientRect().top + window.scrollY;
+        const screenHeight = window.innerHeight;
+        const scrollToPosition = formTop - (screenHeight / 2) + (ticketFormRef.current.offsetHeight / 2);
 
-      window.scrollTo({
-        top: scrollToPosition,
-        behavior: 'smooth',
-      });
+        window.scrollTo({
+          top: scrollToPosition,
+          behavior: 'smooth',
+        });
+      }
     }
   };
 

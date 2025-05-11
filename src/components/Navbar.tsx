@@ -3,7 +3,7 @@ import React, { useRef, useEffect } from 'react';
 interface NavbarProps {
   logo: string;
   producerName: string;
-  onScrollToForm: () => void; // Add a callback prop
+  onScrollToForm: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ logo, producerName, onScrollToForm }) => {
@@ -12,18 +12,17 @@ const Navbar: React.FC<NavbarProps> = ({ logo, producerName, onScrollToForm }) =
 
   useEffect(() => {
     const handleScrollToForm = (event: MouseEvent) => {
-      event.preventDefault(); // Prevent the default jump behavior
+      event.preventDefault();
       const target = event.currentTarget as HTMLAnchorElement;
-      const href = target?.getAttribute('href'); // Safely get the href
+      const href = target?.getAttribute('href');
 
       if (href === '#tickets') {
-        onScrollToForm(); // Call the callback function from the parent
+        onScrollToForm();
       } else if (href) {
-        // Handle scrolling to other sections normally
         const targetElement = document.querySelector(href);
         if (targetElement instanceof HTMLElement) {
           window.scrollTo({
-            top: targetElement.offsetTop - 60, // Adjust offset for navbar height
+            top: targetElement.offsetTop - 60,
             behavior: 'smooth',
           });
         }
@@ -31,15 +30,15 @@ const Navbar: React.FC<NavbarProps> = ({ logo, producerName, onScrollToForm }) =
     };
 
     const handleOtherScroll = (event: MouseEvent) => {
-      event.preventDefault(); // Prevent default behavior
+      event.preventDefault();
       const target = event.currentTarget as HTMLAnchorElement;
-      const href = target?.getAttribute('href'); // Safely get the href
+      const href = target?.getAttribute('href');
 
       if (href) {
         const targetElement = document.querySelector(href);
         if (targetElement instanceof HTMLElement) {
           window.scrollTo({
-            top: targetElement.offsetTop - 60, // Adjust offset for navbar height
+            top: targetElement.offsetTop - 60,
             behavior: 'smooth',
           });
         }

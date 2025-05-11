@@ -27,12 +27,11 @@ const App: React.FC = () => {
         if (response.success) {
           setProducer(response.data);
 
-          // Find active event
           const active = response.data.events.find(
             event => event.status === EventStatus.ACTIVE
           );
+          
           if (active) {
-            active.prevents = []
             setActiveEvent(active);
           }
         }

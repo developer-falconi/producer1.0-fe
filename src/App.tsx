@@ -188,7 +188,7 @@ const App: React.FC = () => {
               rel="noopener noreferrer"
               className="text-gray-300 hover:text-white transition-colors"
             >
-              ProduTik
+              PRODUTIK
             </a>
           </p>
         </footer>

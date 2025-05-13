@@ -82,7 +82,7 @@ export interface User {
 export interface Participant {
   fullName: string;
   phone: string;
-  dni: string;
+  docNumber: string;
   gender: GenderEnum;
   email?: string;
 }

@@ -21,7 +21,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const [formData, setFormData] = useState<TicketFormData>({
-    participants: [{ fullName: '', phone: '', dni: '', gender: GenderEnum.HOMBRE }],
+    participants: [{ fullName: '', phone: '', docNumber: '', gender: GenderEnum.HOMBRE }],
     email: '',
     comprobante: null
   });
@@ -46,7 +46,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
     if (count > currentParticipants.length) {
       // Add more participant slots
       for (let i = currentParticipants.length; i < count; i++) {
-        currentParticipants.push({ fullName: '', phone: '', dni: '', gender: GenderEnum.HOMBRE });
+        currentParticipants.push({ fullName: '', phone: '', docNumber: '', gender: GenderEnum.HOMBRE });
       }
     } else if (count < currentParticipants.length) {
       // Remove excess participant slots
@@ -79,7 +79,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
       return (
         participant.fullName.trim() !== '' &&
         participant.phone.trim() !== '' &&
-        participant.dni.trim() !== '' &&
+        participant.docNumber.trim() !== '' &&
         participant.gender !== '' as GenderEnum
       );
     } else {
@@ -140,7 +140,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
         setFormStep(0);
         setTicketCount(1);
         setFormData({
-          participants: [{ fullName: '', phone: '', dni: '', gender: GenderEnum.HOMBRE }],
+          participants: [{ fullName: '', phone: '', docNumber: '', gender: GenderEnum.HOMBRE }],
           email: '',
           comprobante: null
         });
@@ -225,8 +225,8 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
             <Label htmlFor="dni">DNI</Label>
             <Input
               id="dni"
-              value={participant.dni || ''}
-              onChange={(e) => updateParticipant(participantIndex, 'dni', e.target.value)}
+              value={participant.docNumber || ''}
+              onChange={(e) => updateParticipant(participantIndex, 'docNumber', e.target.value)}
               className="bg-producer-dark/50 border-producer/30 text-white"
               placeholder="DNI..."
             />

@@ -103,3 +103,9 @@ export enum SpinnerSize {
   MEDIUM = "medium",
   LARGE = "large"
 }
+
+export enum ClientTypeEnum {
+  FREE = 'FREE',
+  REGULAR = 'REGULAR',
+  OTRO = 'OTRO'
+}

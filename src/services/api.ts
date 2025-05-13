@@ -1,4 +1,4 @@
-import { ApiResponse, Producer } from "@/types/types";
+import { ApiResponse, ClientTypeEnum, Producer } from "@/types/types";
 
 const API_URL = import.meta.env.VITE_APP_API_BE;
 
@@ -17,7 +17,7 @@ export async function fetchProducerData(): Promise<ApiResponse<Producer>> {
 
 export async function submitTicketForm(formData: FormData, eventId: number): Promise<{ success: boolean }> {
   try {
-    const response = await fetch(`${API_URL}/client/create/${eventId}`, {
+    const response = await fetch(`${API_URL}/client/create/${eventId}?type=${ClientTypeEnum.REGULAR}`, {
       method: "POST",
       body: formData,
     });

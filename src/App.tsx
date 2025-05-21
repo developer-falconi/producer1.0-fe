@@ -25,9 +25,9 @@ const App: React.FC = () => {
         const response = await fetchProducerData();
 
         if (response.success) {
-          setProducer(response.data);
+          setProducer(response.data!);
 
-          const active = response.data.events.find(
+          const active = response.data!.events.find(
             event => event.status === EventStatus.ACTIVE
           );
           

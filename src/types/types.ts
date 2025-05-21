@@ -51,12 +51,13 @@ export interface Event {
   createdAt: string;
   updatedAt: string;
   prevents: Prevent[];
+  mercadopago?: boolean;
 }
 
 export interface Prevent {
   id: number;
   name: string;
-  price: string;
+  price: number;
   quantity: number;
   status: PreventStatusEnum;
   startDate: Date;
@@ -90,12 +91,12 @@ export interface Participant {
 export interface TicketFormData {
   participants: Participant[];
   email: string;
-  comprobante: File | null;
+  comprobante?: File | null;
 }
 
 export interface ApiResponse<T> {
   success: boolean;
-  data: T;
+  data?: T;
 }
 
 export enum SpinnerSize {

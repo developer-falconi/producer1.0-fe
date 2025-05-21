@@ -15,7 +15,7 @@ export async function fetchProducerData(): Promise<ApiResponse<Producer>> {
   }
 }
 
-export async function submitTicketForm(formData: FormData, eventId: number): Promise<{ success: boolean }> {
+export async function submitTicketForm(formData: FormData, eventId: number): Promise<ApiResponse<any>> {
   try {
     const response = await fetch(`${API_URL}/client/create/${eventId}?type=${ClientTypeEnum.REGULAR}`, {
       method: "POST",
@@ -27,6 +27,24 @@ export async function submitTicketForm(formData: FormData, eventId: number): Pro
     }
 
     return { success: true };
+  } catch (error) {
+    console.error("Error submitting ticket form:", error);
+    return { success: false };
+  }
+}
+
+export async function createPreference(preventId: number, quantity: number): Promise<ApiResponse<any>> {
+  try {
+    const response = await fetch(`${API_URL}/mercadopago/create?prevent=${preventId}&quantity=${quantity}`, {
+      method: "POST"
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to submit ticket form");
+    }
+    const data = await response.json();
+
+    return { success: true, data };
   } catch (error) {
     console.error("Error submitting ticket form:", error);
     return { success: false };

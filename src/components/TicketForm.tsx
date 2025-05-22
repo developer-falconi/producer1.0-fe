@@ -144,7 +144,10 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
           email: '',
           comprobante: null
         });
-        onGetTickets();
+
+        setTimeout(() => {
+          onGetTickets();
+        }, 1500);
       } else {
         toast.error("Error enviando información");
       }
@@ -165,7 +168,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
               id="ticketCount"
               value={ticketCount}
               onChange={handleTicketCountChange}
-              className="w-full p-2 mt-1 bg-producer-dark/50 border border-producer/30 rounded-md text-white focus:border-producer focus:ring-1 focus:ring-producer outline-none"
+              className="w-full p-2 mt-1 border border-producer/30 rounded-md text-white bg-gray-800 focus:border-producer focus:ring-1 focus:ring-producer outline-none"
             >
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
                 <option key={num} value={num}>{num}</option>
@@ -291,7 +294,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
               type="file"
               onChange={handleFileChange}
               className="bg-[#5e5e5e] border-producer/30 text-white cursor-pointer"
-              accept="image/*"
+              accept="image/*, application/pdf"
             />
             <p className="text-xs text-gray-400 mt-1">Subi el comprobante</p>
           </div>
@@ -324,35 +327,44 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
   };
 
   return (
-    <div className="bg-black/50 backdrop-blur-sm p-6 rounded-lg shadow-lg w-full max-w-md">
+    <div className="bg-black/50 backdrop-blur-sm p-4 rounded-lg shadow-lg w-full max-w-md">
       {prevent && (
-        <div className="flex flex-col gap-2 mb-2">
-          <p className="text-2xl font-bold text-green-600">
-            {prevent.name}: {formatPrice(prevent.price)}
-          </p>
-          <div className="flex items-start gap-2"> {/* Use a flex container */}
-            <p className="text-white font-bold text-lg m-0 min-w-[50px] sm:min-w-[70px] md:min-w-[80px] lg:min-w-[90px]">
-              Alias:
+        <div className="mb-4">
+          <div>
+            <h2 className="text-2xl font-bold text-green-600 mb-2">
+              {prevent.name}: {formatPrice(prevent.price)}
+            </h2>
+          </div>
+
+          {/* Payment Instructions Section */}
+          <div className="space-y-2">
+            <p className="text-white text-lg">
+              Por favor, transferir <span className="font-bold">{formatPrice(formData.participants.length * prevent.price)}</span> al alias indicado.
             </p>
-            {event.alias ? (
-              event.alias.includes('/') ? (
-                <div className="flex flex-col">
-                  {event.alias.split('/').map((part, index) => (
-                    <span key={index} className="text-white text-lg text-start">
-                      {part.trim()}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-white text-lg m-0">
-                  {event.alias.trim()}
-                </p>
-              )
-            ) : (
-              <p className="text-gray-500 text-lg m-0">
-                No Alias
+            <div className="flex items-start gap-2">
+              <p className="text-white font-bold text-lg min-w-[50px] sm:min-w-[70px] md:min-w-[80px] lg:min-w-[90px]">
+                Alias:
               </p>
-            )}
+              {event.alias ? (
+                event.alias.includes('/') ? (
+                  <div className="flex flex-col">
+                    {event.alias.split('/').map((part, index) => (
+                      <span key={index} className="text-white text-lg text-start">
+                        {part.trim()}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-white text-lg">
+                    {event.alias.trim()}
+                  </p>
+                )
+              ) : (
+                <p className="text-gray-400 text-lg italic">
+                  No specific alias required (Direct transfer)
+                </p>
+              )}
+            </div>
           </div>
         </div>
       )}

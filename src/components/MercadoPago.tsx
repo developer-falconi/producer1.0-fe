@@ -70,8 +70,8 @@ const MercadoPagoButton: React.FC<MercadoPagoButtonProps> = ({ preferenceId }) =
   return (
     <div className="mercadopago-button-container w-full">
       <Wallet
-        initialization={{ redirectMode: 'self', preferenceId }}
-        customization={{ theme: 'dark', valueProp: 'smart_option' }}
+        // initialization={{ redirectMode: 'self', preferenceId }}
+        // customization={{ theme: 'dark', valueProp: 'smart_option' }}
         onSubmit={handleOnSubmit}
         onReady={handleOnReady}
         onError={handleOnError}

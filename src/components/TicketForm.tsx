@@ -327,45 +327,52 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
   };
 
   return (
-    <div className="bg-black/50 backdrop-blur-sm p-4 rounded-lg shadow-lg w-full max-w-md">
+    <div className="bg-black/70 backdrop-blur-sm p-4 rounded-lg shadow-lg w-full max-w-md">
       {prevent && (
         <div className="mb-4">
           <div>
-            <h2 className="text-2xl font-bold text-green-600 mb-2">
-              {prevent.name}: {formatPrice(prevent.price)}
+            <h2 className="text-2xl font-bold text-green-600 mb-3">
+              {prevent.name}
             </h2>
           </div>
 
-          {/* Payment Instructions Section */}
-          <div className="space-y-2">
-            <p className="text-white text-lg">
-              Por favor, transferir <span className="font-bold">{formatPrice(formData.participants.length * prevent.price)}</span> al alias indicado.
-            </p>
-            <div className="flex items-start gap-2">
-              <p className="text-white font-bold text-lg min-w-[50px] sm:min-w-[70px] md:min-w-[80px] lg:min-w-[90px]">
-                Alias:
+          {formStep + 1 === formData.participants.length + 2 && (
+            <div className="space-y-2">
+              <h3
+                className='text-xl font-bold text-blue-600'
+              >
+                Total: {formatPrice(prevent.price * formData.participants.length)}
+              </h3>
+              <p className="text-white italic text-sm">
+                Por favor, transferir al alias indicado.
               </p>
-              {event.alias ? (
-                event.alias.includes('/') ? (
-                  <div className="flex flex-col">
-                    {event.alias.split('/').map((part, index) => (
-                      <span key={index} className="text-white text-lg text-start">
-                        {part.trim()}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-white text-lg">
-                    {event.alias.trim()}
-                  </p>
-                )
-              ) : (
-                <p className="text-gray-400 text-lg italic">
-                  No specific alias required (Direct transfer)
+              <div className="flex items-start gap-2">
+                <p className="text-white font-bold text-lg min-w-[50px] sm:min-w-[70px] md:min-w-[80px] lg:min-w-[90px]">
+                  Alias:
                 </p>
-              )}
+                {event.alias ? (
+                  event.alias.includes('/') ? (
+                    <div className="flex flex-col">
+                      {event.alias.split('/').map((part, index) => (
+                        <span key={index} className="text-white text-lg text-start">
+                          {part.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-white text-lg">
+                      {event.alias.trim()}
+                    </p>
+                  )
+                ) : (
+                  <p className="text-gray-400 text-lg italic">
+                    No specific alias required (Direct transfer)
+                  </p>
+                )}
+              </div>
+              <div className="!my-4 border-b" />
             </div>
-          </div>
+          )}
         </div>
       )}
       <div className="mb-4">

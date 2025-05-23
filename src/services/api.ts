@@ -1,6 +1,7 @@
 import { ApiResponse, ClientTypeEnum, Producer } from "@/types/types";
 
-const API_URL = import.meta.env.VITE_APP_API_BE; 
+const API_URL = 'https://produtik-be-prod-367349143490.southamerica-east1.run.app/api';
+// const API_URL = import.meta.env.VITE_APP_API_BE;
 
 export async function fetchProducerData(): Promise<ApiResponse<Producer>> {
   try {

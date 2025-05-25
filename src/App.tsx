@@ -10,6 +10,12 @@ import { Toaster } from 'sonner';
 import Contact from './components/Contact';
 import { cn } from './lib/utils';
 import DynamicFavicon from './components/DynamicFavicon';
+import PaymentResult from './components/PaymentResult';
+
+interface PaymentStatus {
+  status: string;
+  params: Record<string, string>;
+}
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -17,6 +23,7 @@ const App: React.FC = () => {
   const [activeEvent, setActiveEvent] = useState<Event | null>(null);
   const [showTicketForm, setShowTicketForm] = useState<boolean>(false);
   const ticketFormRef = useRef<HTMLDivElement>(null);
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,7 +37,7 @@ const App: React.FC = () => {
           const active = response.data!.events.find(
             event => event.status === EventStatus.ACTIVE
           );
-          
+
           if (active) {
             setActiveEvent(active);
           }
@@ -53,6 +60,25 @@ const App: React.FC = () => {
       document.title = 'Producer Platform';
     }
   }, [producer]);
+
+  // Detect MercadoPago query params on load
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const status = q.get('collection_status') || q.get('status');
+
+    if (status) {
+      const params: Record<string, string> = {};
+      q.forEach((v, k) => (params[k] = v));
+      setPaymentStatus({ status, params });
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!paymentStatus) return;
+    const timer = window.setTimeout(() => setPaymentStatus(null), 8000);
+    return () => window.clearTimeout(timer);
+  }, [paymentStatus]);
 
   const toggleTicketForm = () => {
     if (activeEvent && activeEvent?.prevents.length > 0) {
@@ -136,36 +162,43 @@ const App: React.FC = () => {
               onGetTickets={toggleTicketForm}
             />
 
-            {/* Event flyer/logo or Ticket Form */}
             <div
               ref={ticketFormRef}
               className="w-full md:w-1/2 flex justify-center items-center p-4 mt-8 md:mt-0 relative min-h-[700px]"
             >
-              <div className={cn(
-                'absolute inset-0 flex justify-center items-center transition-all',
-                'duration-500 ease-in-out',
-                showTicketForm ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'
-              )}>
-                <div className="rounded-lg overflow-hidden shadow-2xl">
-                  <img
-                    src={activeEvent.logo}
-                    alt={`${activeEvent.name} flyer`}
-                    className="w-full h-auto max-w-md"
-                  />
-                </div>
-              </div>
-
+              {/* 1) Flyer/Form layer */}
               <div
                 className={cn(
-                  'absolute inset-0 flex flex-col gap-4 justify-center items-center transition-all duration-500 ease-in-out',
-                  showTicketForm ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
+                  'absolute inset-0 flex justify-center items-center transition-all duration-500 ease-in-out',
+                  paymentStatus ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'
                 )}
               >
-                <TicketForm
-                  event={activeEvent}
-                  onGetTickets={toggleTicketForm}
-                  prevent={lastActivePrevent}
-                />
+                {/* when no paymentStatus, show flyer OR form layers */}
+                {!showTicketForm ? (
+                  <div className="rounded-lg overflow-hidden shadow-2xl">
+                    <img
+                      src={activeEvent.logo}
+                      alt={`${activeEvent.name} flyer`}
+                      className="w-full h-auto max-w-md"
+                    />
+                  </div>
+                ) : (
+                  <TicketForm
+                    event={activeEvent}
+                    onGetTickets={toggleTicketForm}
+                    prevent={lastActivePrevent}
+                  />
+                )}
+              </div>
+
+              {/* 2) PaymentResult layer */}
+              <div
+                className={cn(
+                  'absolute inset-0 flex justify-center items-center transition-all duration-500 ease-in-out',
+                  paymentStatus ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
+                )}
+              >
+                {paymentStatus && <PaymentResult status={paymentStatus.status} />}
               </div>
             </div>
           </div>

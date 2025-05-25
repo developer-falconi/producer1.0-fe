@@ -23,7 +23,8 @@ interface MercadoPagoButtonProps {
 }
 
 const MercadoPagoButton: React.FC<MercadoPagoButtonProps> = ({ preferenceId }) => {
-  // --- Callbacks ---
+  const initialization: any = { redirectMode: 'self', preferenceId }
+
   const handleOnSubmit = async () => {
     // This callback is triggered when the user clicks the Wallet Brick button.
     // It signifies the initiation of the payment flow from the frontend.
@@ -70,8 +71,8 @@ const MercadoPagoButton: React.FC<MercadoPagoButtonProps> = ({ preferenceId }) =
   return (
     <div className="mercadopago-button-container w-full">
       <Wallet
-        // initialization={{ redirectMode: 'self', preferenceId }}
-        // customization={{ theme: 'dark', valueProp: 'smart_option' }}
+        initialization={initialization}
+        customization={{ theme: 'dark', valueProp: 'smart_option' }}
         onSubmit={handleOnSubmit}
         onReady={handleOnReady}
         onError={handleOnError}

@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { submitTicketForm } from '../services/api';
+import { createPreference, submitTicketForm } from '../services/api';
 import Spinner from './Spinner';
 import { toast } from 'sonner';
 import { formatPrice } from '@/lib/utils';
+import MercadoPagoButton from './MercadoPago';
 
 interface TicketFormProps {
   event: Event;
@@ -19,6 +20,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
   const [ticketCount, setTicketCount] = useState<number>(1);
   const [formStep, setFormStep] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [preferenceId, setPreferenceId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<TicketFormData>({
     participants: [{ fullName: '', phone: '', docNumber: '', gender: GenderEnum.HOMBRE }],
@@ -158,6 +160,23 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
     }
   };
 
+  const handleGoToPay = async () => {
+    setIsSubmitting(true);
+    try {
+      const qty = formData.participants.length;
+      const result = await createPreference(event.id, qty);
+      if (result.success && result.data.preferenceId) {
+        setPreferenceId(result.data.preferenceId);
+      } else {
+        toast.error('Error al generar la preferencia de pago');
+      }
+    } catch {
+      toast.error('Error al contactar a Mercado Pago');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const renderStepContent = () => {
     if (formStep === 0) {
       return (
@@ -266,6 +285,27 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
               Siguiente
             </Button>
           </div>
+        </div>
+      );
+    } else if (formStep === formData.participants.length + 1) {
+      if (preferenceId) {
+        return (
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold text-white mb-2">Completa tu pago</h3>
+            <MercadoPagoButton preferenceId={preferenceId} />
+          </div>
+        );
+      }
+
+      return (
+        <div className="text-center">
+          <Button
+            onClick={handleGoToPay}
+            disabled={isSubmitting}
+            className="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-md"
+          >
+            {isSubmitting ? 'Generando pago...' : 'Ir a pagar'}
+          </Button>
         </div>
       );
     } else {

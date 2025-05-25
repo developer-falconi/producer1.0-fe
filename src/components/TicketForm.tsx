@@ -33,6 +33,14 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
 
   const participantCount = formData.participants.length;
   const totalSteps = participantCount + 2;
+  const mpFeeRate = 0.0824;
+  const baseTotal = prevent!.price * formData.participants.length;
+  const totalPrice = paymentMethod === 'mercadopago'
+    ? Math.round(baseTotal * (1 + mpFeeRate) * 100) / 100
+    : baseTotal;
+
+  const feeTotal = Math.round((totalPrice - baseTotal) * 100) / 100;
+  const feePerService = Math.round((feeTotal / formData.participants.length) * 100) / 100;
 
   const updateParticipant = (index: number, field: keyof Participant, value: string) => {
     const newParticipants = [...formData.participants];
@@ -289,30 +297,31 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
 
           <Label className="block">Selecciona método de pago</Label>
           <div className="flex gap-6 !mb-4">
-            <label className="flex items-center gap-2">
+            <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
                 name="payment"
                 checked={paymentMethod === 'transferencia'}
                 onChange={() => setPaymentMethod('transferencia')}
-                className="h-5 w-5 border bg-gray-800 rounded-none text-blue-800 focus:ring-2 focus:ring-blue-600 cursor-pointer"
+                className="h-5 w-5 border bg-gray-800 rounded-none text-blue-800 focus:ring-2 focus:ring-blue-600"
               />
               <span className="text-white">Transferencia</span>
             </label>
-            <label className="flex items-center gap-2">
+            <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
                 name="payment"
                 checked={paymentMethod === 'mercadopago'}
                 onChange={() => setPaymentMethod('mercadopago')}
-                className="h-5 w-5 border bg-gray-800 rounded-none text-blue-800 focus:ring-2 focus:ring-blue-600 cursor-pointer"
+                className="h-5 w-5 border bg-gray-800 rounded-none text-blue-800 focus:ring-2 focus:ring-blue-600"
               />
               <span className="text-white">MercadoPago</span>
             </label>
           </div>
 
           {paymentMethod === 'transferencia' && (
-            <>
+            <div className='flex flex-col gap-2'>
+              <p className='italic text-xs text-blue-600 text-left'>La acreditación demora hasta 5 días</p>
               <Label htmlFor="comprobante">Subí tu comprobante</Label>
               <Input
                 id="comprobante"
@@ -323,21 +332,22 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
               />
               <Button
                 onClick={handleSubmit}
-                disabled={isSubmitting}
+                disabled={formData.email.length === 0}
                 className="mt-4 w-full bg-green-800"
               >
                 {isSubmitting ? <Spinner size={SpinnerSize.SMALL} /> : 'Enviar'}
               </Button>
-            </>
+            </div>
           )}
 
           {paymentMethod === 'mercadopago' && (
             <div className="text-center mt-4">
+              <p className='italic text-xs text-blue-600 text-left'>Acreditación instantanea</p>
               {!preferenceId ? (
                 <Button
                   onClick={handleGoToPay}
                   disabled={formData.email.length === 0}
-                  className="bg-green-600 hover:bg-green-500 px-6 py-2"
+                  className="mt-4 w-full bg-green-800"
                 >
                   {isSubmitting ? 'Generando pago...' : 'Ir a pagar'}
                 </Button>
@@ -364,13 +374,21 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
           </div>
 
           {formStep + 1 === formData.participants.length + 2 && (
-            <div className="space-y-2">
-              <h3
-                className='text-xl font-bold text-blue-600'
-              >
-                Total: {formatPrice(prevent.price * formData.participants.length)}
-              </h3>
-              <div className="!my-4 border-b" />
+            <div className="grid grid-cols-2 gap-4 items-start">
+              <div>
+                <h3 className="text-xs font-bold text-blue-600">
+                  Subtotal: {formatPrice(baseTotal)}
+                </h3>
+                <h3 className="text-xs font-bold text-blue-600">
+                  Cargo de servicio: {formatPrice(feePerService)}
+                </h3>
+              </div>
+              <div className="text-right">
+                <h3 className="text-xl font-bold text-blue-700">
+                  Total: {formatPrice(totalPrice)}
+                </h3>
+              </div>
+              <div className="col-span-2 border-b" />
             </div>
           )}
         </div>

@@ -94,10 +94,9 @@ export interface TicketFormData {
   comprobante?: File | null;
 }
 
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-}
+export type ApiResponse<T> =
+  | { success: true; data: T }
+  | { success: false; data?: never; error?: string };
 
 export enum SpinnerSize {
   SMALL = "small",
@@ -109,4 +108,8 @@ export enum ClientTypeEnum {
   FREE = 'FREE',
   REGULAR = 'REGULAR',
   OTRO = 'OTRO'
+}
+
+export interface PreferenceData {
+  preferenceId: string
 }

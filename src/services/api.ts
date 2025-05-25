@@ -1,7 +1,6 @@
-import { ApiResponse, ClientTypeEnum, Producer } from "@/types/types";
+import { ApiResponse, ClientTypeEnum, PreferenceData, Producer } from "@/types/types";
 
-// const API_URL = import.meta.env.VITE_APP_API_BE;
-const API_URL = 'https://produtik-be-dev-533964203813.southamerica-east1.run.app/api'
+const API_URL = import.meta.env.VITE_APP_API_BE;
 
 export async function fetchProducerData(): Promise<ApiResponse<Producer>> {
   try {
@@ -27,14 +26,14 @@ export async function submitTicketForm(formData: FormData, eventId: number): Pro
       throw new Error("Failed to submit ticket form");
     }
 
-    return { success: true };
+    return await response.json();
   } catch (error) {
     console.error("Error submitting ticket form:", error);
     return { success: false };
   }
 }
 
-export async function createPreference(preventId: number, quantity: number): Promise<ApiResponse<any>> {
+export async function createPreference(preventId: number, quantity: number): Promise<ApiResponse<PreferenceData>> {
   try {
     const response = await fetch(`${API_URL}/mercadopago/create?prevent=${preventId}&quantity=${quantity}`, {
       method: "POST"

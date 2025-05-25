@@ -164,7 +164,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
     setIsSubmitting(true);
     try {
       const qty = formData.participants.length;
-      const result = await createPreference(event.id, qty);
+      const result = await createPreference(prevent!.id, qty);
       if (result.success && result.data.preferenceId) {
         setPreferenceId(result.data.preferenceId);
       } else {

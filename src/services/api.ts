@@ -1,7 +1,6 @@
 import { ApiResponse, ClientTypeEnum, Producer } from "@/types/types";
 
-const API_URL = 'https://produtik-be-prod-367349143490.southamerica-east1.run.app/api';
-// const API_URL = import.meta.env.VITE_APP_API_BE;
+const API_URL = import.meta.env.VITE_APP_API_BE;
 
 export async function fetchProducerData(): Promise<ApiResponse<Producer>> {
   try {
@@ -43,9 +42,7 @@ export async function createPreference(preventId: number, quantity: number): Pro
     if (!response.ok) {
       throw new Error("Failed to submit ticket form");
     }
-    const data = await response.json();
-
-    return { success: true, data };
+    return await response.json();
   } catch (error) {
     console.error("Error submitting ticket form:", error);
     return { success: false };

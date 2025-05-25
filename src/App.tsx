@@ -61,7 +61,6 @@ const App: React.FC = () => {
     }
   }, [producer]);
 
-  // Detect MercadoPago query params on load
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
     const status = q.get('collection_status') || q.get('status');
@@ -71,6 +70,9 @@ const App: React.FC = () => {
       q.forEach((v, k) => (params[k] = v));
       setPaymentStatus({ status, params });
       window.history.replaceState({}, document.title, window.location.pathname);
+      setTimeout(() => {
+        ticketFormRef.current!.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 600)
     }
   }, []);
 

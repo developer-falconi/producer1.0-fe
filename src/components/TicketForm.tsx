@@ -320,7 +320,8 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
           </div>
 
           {paymentMethod === 'transferencia' && (
-            <>
+            <div className='flex flex-col gap-2'>
+              <p className='italic text-xs text-blue-600 text-left'>La acreditación demora hasta 5 días</p>
               <Label htmlFor="comprobante">Subí tu comprobante</Label>
               <Input
                 id="comprobante"
@@ -331,21 +332,22 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
               />
               <Button
                 onClick={handleSubmit}
-                disabled={isSubmitting}
+                disabled={formData.email.length === 0}
                 className="mt-4 w-full bg-green-800"
               >
                 {isSubmitting ? <Spinner size={SpinnerSize.SMALL} /> : 'Enviar'}
               </Button>
-            </>
+            </div>
           )}
 
           {paymentMethod === 'mercadopago' && (
             <div className="text-center mt-4">
+              <p className='italic text-xs text-blue-600 text-left'>Acreditación instantanea</p>
               {!preferenceId ? (
                 <Button
                   onClick={handleGoToPay}
                   disabled={formData.email.length === 0}
-                  className="bg-green-600 hover:bg-green-500 px-6 py-2"
+                  className="mt-4 w-full bg-green-800"
                 >
                   {isSubmitting ? 'Generando pago...' : 'Ir a pagar'}
                 </Button>
@@ -372,18 +374,21 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
           </div>
 
           {formStep + 1 === formData.participants.length + 2 && (
-            <div className="space-y-2">
-              <h3
-                className='text-xl font-bold text-blue-600'
-              >
-                Total: {formatPrice(totalPrice)}
-              </h3>
-              <h3
-                className='text-sm font-bold text-blue-700'
-              >
-                Cargo de servicio: {formatPrice(feePerService)}
-              </h3>
-              <div className="!my-4 border-b" />
+            <div className="grid grid-cols-2 gap-4 items-start">
+              <div>
+                <h3 className="text-xs font-bold text-blue-600">
+                  Subtotal: {formatPrice(baseTotal)}
+                </h3>
+                <h3 className="text-xs font-bold text-blue-600">
+                  Cargo de servicio: {formatPrice(feePerService)}
+                </h3>
+              </div>
+              <div className="text-right">
+                <h3 className="text-xl font-bold text-blue-700">
+                  Total: {formatPrice(totalPrice)}
+                </h3>
+              </div>
+              <div className="col-span-2 border-b" />
             </div>
           )}
         </div>

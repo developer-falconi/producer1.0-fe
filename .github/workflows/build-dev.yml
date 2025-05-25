@@ -32,22 +32,22 @@ jobs:
           VITE_APP_MP_PUBLIC_KEY: ${{ secrets.VITE_APP_MP_PUBLIC_KEY_DEV }}
           CI: true
 
-      # - name: Configure Git for commit
-      #   run: |
-      #     git config --local user.email "developerfalconi@gmail.com"
-      #     git config --local user.name "developer-falconi"
+      - name: Configure Git for commit
+        run: |
+          git config --local user.email "developerfalconi@gmail.com"
+          git config --local user.name "developer-falconi"
 
-      # - name: Add and commit build folder
-      #   run: |
-      #     git add build
-      #     if git diff --cached --quiet; then
-      #       echo "No changes to commit in build folder"
-      #     else
-      #       git commit -m "Add production build"
-      #     fi
+      - name: Add and commit build folder
+        run: |
+          git add build
+          if git diff --cached --quiet; then
+            echo "No changes to commit in build folder"
+          else
+            git commit -m "Add production build"
+          fi
 
-      # - name: Push changes
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.TOKEN_GITHUB }}
-      #     branch: ${{ github.ref_name }}
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN_GITHUB }}
+          branch: ${{ github.ref_name }}

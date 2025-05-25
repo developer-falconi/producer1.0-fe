@@ -3,4 +3,3 @@
 .env.development
 
 /node_modules
-/build

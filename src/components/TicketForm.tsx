@@ -33,6 +33,14 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
 
   const participantCount = formData.participants.length;
   const totalSteps = participantCount + 2;
+  const mpFeeRate = 0.0824;
+  const baseTotal = prevent!.price * formData.participants.length;
+  const totalPrice = paymentMethod === 'mercadopago'
+    ? Math.round(baseTotal * (1 + mpFeeRate) * 100) / 100
+    : baseTotal;
+
+  const feeTotal = Math.round((totalPrice - baseTotal) * 100) / 100;
+  const feePerService = Math.round((feeTotal / formData.participants.length) * 100) / 100;
 
   const updateParticipant = (index: number, field: keyof Participant, value: string) => {
     const newParticipants = [...formData.participants];
@@ -368,7 +376,12 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
               <h3
                 className='text-xl font-bold text-blue-600'
               >
-                Total: {formatPrice(prevent.price * formData.participants.length)}
+                Total: {formatPrice(totalPrice)}
+              </h3>
+              <h3
+                className='text-sm font-bold text-blue-700'
+              >
+                Cargo de servicio: {formatPrice(feePerService)}
               </h3>
               <div className="!my-4 border-b" />
             </div>

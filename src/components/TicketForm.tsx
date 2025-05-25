@@ -297,23 +297,23 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
 
           <Label className="block">Selecciona método de pago</Label>
           <div className="flex gap-6 !mb-4">
-            <label className="flex items-center gap-2">
+            <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
                 name="payment"
                 checked={paymentMethod === 'transferencia'}
                 onChange={() => setPaymentMethod('transferencia')}
-                className="h-5 w-5 border bg-gray-800 rounded-none text-blue-800 focus:ring-2 focus:ring-blue-600 cursor-pointer"
+                className="h-5 w-5 border bg-gray-800 rounded-none text-blue-800 focus:ring-2 focus:ring-blue-600"
               />
               <span className="text-white">Transferencia</span>
             </label>
-            <label className="flex items-center gap-2">
+            <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
                 name="payment"
                 checked={paymentMethod === 'mercadopago'}
                 onChange={() => setPaymentMethod('mercadopago')}
-                className="h-5 w-5 border bg-gray-800 rounded-none text-blue-800 focus:ring-2 focus:ring-blue-600 cursor-pointer"
+                className="h-5 w-5 border bg-gray-800 rounded-none text-blue-800 focus:ring-2 focus:ring-blue-600"
               />
               <span className="text-white">MercadoPago</span>
             </label>

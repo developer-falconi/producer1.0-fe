@@ -5,10 +5,9 @@ import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 const MP_PUBLIC_KEY = import.meta.env.VITE_APP_MP_PUBLIC_KEY;
 
 // Initialize Mercado Pago SDK only if the public key is available
-// This runs once when the module is first loaded.
 if (MP_PUBLIC_KEY) {
   initMercadoPago(MP_PUBLIC_KEY, {
-    locale: 'es-AR', // Optional: Set your locale, e.g., 'es-AR', 'pt-BR'
+    locale: 'es-AR',
   });
 } else {
   console.error(

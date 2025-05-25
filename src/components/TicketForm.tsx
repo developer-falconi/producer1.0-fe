@@ -16,17 +16,23 @@ interface TicketFormProps {
   prevent?: Prevent;
 }
 
+type PaymentMethod = 'transferencia' | 'mercadopago';
+
 const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent }) => {
   const [ticketCount, setTicketCount] = useState<number>(1);
   const [formStep, setFormStep] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('mercadopago');
 
   const [formData, setFormData] = useState<TicketFormData>({
     participants: [{ fullName: '', phone: '', docNumber: '', gender: GenderEnum.HOMBRE }],
     email: '',
     comprobante: null
   });
+
+  const participantCount = formData.participants.length;
+  const totalSteps = participantCount + 2;
 
   const updateParticipant = (index: number, field: keyof Participant, value: string) => {
     const newParticipants = [...formData.participants];
@@ -41,17 +47,13 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
   const handleTicketCountChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const count = parseInt(e.target.value);
     setTicketCount(count);
-
-    // Adjust participants array based on ticket count
     const currentParticipants = [...formData.participants];
 
     if (count > currentParticipants.length) {
-      // Add more participant slots
       for (let i = currentParticipants.length; i < count; i++) {
         currentParticipants.push({ fullName: '', phone: '', docNumber: '', gender: GenderEnum.HOMBRE });
       }
     } else if (count < currentParticipants.length) {
-      // Remove excess participant slots
       currentParticipants.splice(count);
     }
 
@@ -71,27 +73,16 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
   };
 
   const validateCurrentStep = () => {
-    if (formStep === 0) {
-      // Validate ticket count selection
-      return ticketCount > 0;
-    } else if (formStep < formData.participants.length + 1) {
-      // Validate current participant data
-      const participantIndex = formStep - 1;
-      const participant = formData.participants[participantIndex];
-      return (
-        participant.fullName.trim() !== '' &&
-        participant.phone.trim() !== '' &&
-        participant.docNumber.trim() !== '' &&
-        participant.gender !== '' as GenderEnum
-      );
-    } else {
-      // Validate email and comprobante
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return (
-        emailRegex.test(formData.email) &&
-        formData.comprobante !== null
-      );
+    if (formStep === 0) return ticketCount > 0;
+    if (formStep >= 1 && formStep <= participantCount) {
+      const p = formData.participants[formStep - 1];
+      return p.fullName && p.phone && p.docNumber;
     }
+    if (formStep === participantCount + 1) {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) return false;
+      if (paymentMethod === 'transferencia' && !formData.comprobante) return false;
+    }
+    return true;
   };
 
   const nextStep = () => {
@@ -137,19 +128,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
 
       if (result.success) {
         toast.success("Entradas solicitadas. Una vez validado tu pago te las enviaremos en un mail");
-
-        // Reset form
-        setFormStep(0);
-        setTicketCount(1);
-        setFormData({
-          participants: [{ fullName: '', phone: '', docNumber: '', gender: GenderEnum.HOMBRE }],
-          email: '',
-          comprobante: null
-        });
-
-        setTimeout(() => {
-          onGetTickets();
-        }, 1500);
+        resetAll();
       } else {
         toast.error("Error enviando información");
       }
@@ -163,18 +142,27 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
   const handleGoToPay = async () => {
     setIsSubmitting(true);
     try {
-      const qty = formData.participants.length;
-      const result = await createPreference(prevent!.id, qty);
-      if (result.success && result.data.preferenceId) {
-        setPreferenceId(result.data.preferenceId);
-      } else {
-        toast.error('Error al generar la preferencia de pago');
-      }
+      const res = await createPreference(prevent!.id, participantCount);
+      if (res.success && res.data.preferenceId) {
+        setPreferenceId(res.data.preferenceId);
+      } else toast.error('Error al generar la preferencia de pago');
     } catch {
       toast.error('Error al contactar a Mercado Pago');
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const resetAll = () => {
+    setFormStep(0);
+    setTicketCount(1);
+    setFormData({
+      participants: [{ fullName: '', phone: '', docNumber: '', gender: GenderEnum.HOMBRE }],
+      email: '',
+      comprobante: null
+    });
+    setPreferenceId(null);
+    onGetTickets();
   };
 
   const renderStepContent = () => {
@@ -287,83 +275,82 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
           </div>
         </div>
       );
-    } else if (formStep === formData.participants.length + 1) {
-      if (preferenceId) {
-        return (
-          <div className="mt-4">
-            <h3 className="text-lg font-semibold text-white mb-2">Completa tu pago</h3>
-            <MercadoPagoButton preferenceId={preferenceId} />
-          </div>
-        );
-      }
-
-      return (
-        <div className="text-center">
-          <Button
-            onClick={handleGoToPay}
-            disabled={isSubmitting}
-            className="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-md"
-          >
-            {isSubmitting ? 'Generando pago...' : 'Ir a pagar'}
-          </Button>
-        </div>
-      );
-    } else {
+    } if (formStep === participantCount + 1) {
       return (
         <div className="space-y-4 text-white">
-          <h3 className="text-lg font-semibold text-white">
-            Contacto & Pago
-          </h3>
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            value={formData.email}
+            onChange={e => setFormData({ ...formData, email: e.target.value })}
+            className="bg-producer-dark/50 border-producer/30 text-white"
+          />
 
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email || ''}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="bg-producer-dark/50 border-producer/30 text-white"
-              placeholder="Email..."
-            />
+          <Label className="block">Selecciona método de pago</Label>
+          <div className="flex gap-6 !mb-4">
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="payment"
+                checked={paymentMethod === 'transferencia'}
+                onChange={() => setPaymentMethod('transferencia')}
+                className="h-5 w-5 border bg-gray-800 rounded-none text-blue-800 focus:ring-2 focus:ring-blue-600 cursor-pointer"
+              />
+              <span className="text-white">Transferencia</span>
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="payment"
+                checked={paymentMethod === 'mercadopago'}
+                onChange={() => setPaymentMethod('mercadopago')}
+                className="h-5 w-5 border bg-gray-800 rounded-none text-blue-800 focus:ring-2 focus:ring-blue-600 cursor-pointer"
+              />
+              <span className="text-white">MercadoPago</span>
+            </label>
           </div>
 
-          <div>
-            <Label htmlFor="comprobante">Comprobante</Label>
-            <Input
-              id="comprobante"
-              type="file"
-              onChange={handleFileChange}
-              className="bg-[#5e5e5e] border-producer/30 text-white cursor-pointer"
-              accept="image/*, application/pdf"
-            />
-            <p className="text-xs text-gray-400 mt-1">Subi el comprobante</p>
-          </div>
+          {paymentMethod === 'transferencia' && (
+            <>
+              <Label htmlFor="comprobante">Subí tu comprobante</Label>
+              <Input
+                id="comprobante"
+                type="file"
+                accept="image/*,application/pdf"
+                onChange={handleFileChange}
+                className="bg-[#5e5e5e] border-producer/30 text-white"
+              />
+              <Button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="mt-4 w-full bg-green-800"
+              >
+                {isSubmitting ? <Spinner size={SpinnerSize.SMALL} /> : 'Enviar'}
+              </Button>
+            </>
+          )}
 
-          <div className="flex justify-between gap-4">
-            <Button
-              onClick={prevStep}
-              className="w-1/2 bg-red-800 hover:bg-red-700"
-            >
-              Atras
-            </Button>
-            <Button
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="w-1/2 bg-green-800 hover:bg-green-700 flex gap-2"
-            >
-              {isSubmitting ? (
-                <>
-                  <Spinner size={SpinnerSize.SMALL} />
-                  Enviando...
-                </>
+          {paymentMethod === 'mercadopago' && (
+            <div className="text-center mt-4">
+              {!preferenceId ? (
+                <Button
+                  onClick={handleGoToPay}
+                  disabled={formData.email.length === 0}
+                  className="bg-green-600 hover:bg-green-500 px-6 py-2"
+                >
+                  {isSubmitting ? 'Generando pago...' : 'Ir a pagar'}
+                </Button>
               ) : (
-                'Enviar'
+                <MercadoPagoButton preferenceId={preferenceId} />
               )}
-            </Button>
-          </div>
+            </div>
+          )}
         </div>
       );
     }
+
+    return null;
   };
 
   return (
@@ -383,33 +370,6 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
               >
                 Total: {formatPrice(prevent.price * formData.participants.length)}
               </h3>
-              <p className="text-white italic text-sm">
-                Por favor, transferir al alias indicado.
-              </p>
-              <div className="flex items-start gap-2">
-                <p className="text-white font-bold text-lg min-w-[50px] sm:min-w-[70px] md:min-w-[80px] lg:min-w-[90px]">
-                  Alias:
-                </p>
-                {event.alias ? (
-                  event.alias.includes('/') ? (
-                    <div className="flex flex-col">
-                      {event.alias.split('/').map((part, index) => (
-                        <span key={index} className="text-white text-lg text-start">
-                          {part.trim()}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-white text-lg">
-                      {event.alias.trim()}
-                    </p>
-                  )
-                ) : (
-                  <p className="text-gray-400 text-lg italic">
-                    No specific alias required (Direct transfer)
-                  </p>
-                )}
-              </div>
               <div className="!my-4 border-b" />
             </div>
           )}
@@ -419,7 +379,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold text-white">Entradas</h2>
           <div className="text-sm text-green-600">
-            Paso {formStep + 1} de {formData.participants.length + 2}
+            Paso {formStep + 1} de {totalSteps}
           </div>
         </div>
 
@@ -427,7 +387,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
           <div
             className="bg-green-600 h-full transition-all duration-300 ease-in-out"
             style={{
-              width: `${((formStep + 1) / (formData.participants.length + 2)) * 100}%`
+              width: `${((formStep + 1) / (totalSteps)) * 100}%`
             }}
           />
         </div>

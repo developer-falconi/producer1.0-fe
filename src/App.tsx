@@ -217,7 +217,7 @@ const App: React.FC = () => {
           <p className="text-gray-400 text-sm">
             Created by{' '}
             <a
-              href="https://ticketera-fe.vercel.app/"
+              href="https://www.produtik.com/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-300 hover:text-white transition-colors"

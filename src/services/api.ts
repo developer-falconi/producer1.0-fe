@@ -33,9 +33,13 @@ export async function submitTicketForm(formData: FormData, eventId: number): Pro
   }
 }
 
-export async function createPreference(preventId: number, quantity: number): Promise<ApiResponse<PreferenceData>> {
+export async function createPreference(
+  preventId: number, 
+  quantity: number,
+  deviceId: string
+): Promise<ApiResponse<PreferenceData>> {
   try {
-    const response = await fetch(`${API_URL}/mercadopago/create?prevent=${preventId}&quantity=${quantity}`, {
+    const response = await fetch(`${API_URL}/mercadopago/create?prevent=${preventId}&quantity=${quantity}&device=${deviceId}`, {
       method: "POST"
     });
 

@@ -28,7 +28,7 @@ export async function submitTicketForm(formData: FormData, eventId: number): Pro
 
     return await response.json();
   } catch (error) {
-    console.error("Error submitting ticket form:", error);
+    console.error("Error submitting ticket form: ", error);
     return { success: false };
   }
 }

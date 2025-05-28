@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Event, GenderEnum, Participant, Prevent, SpinnerSize, TicketFormData } from '../types/types';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,9 +9,6 @@ import Spinner from './Spinner';
 import { toast } from 'sonner';
 import { cn, formatPrice } from '@/lib/utils';
 import MercadoPagoButton from './MercadoPago';
-import { loadMercadoPago } from '@mercadopago/sdk-js';
-
-const MP_PUBLIC_KEY = import.meta.env.VITE_APP_MP_PUBLIC_KEY;
 
 interface TicketFormProps {
   event: Event;
@@ -27,7 +24,6 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('transferencia');
-  const [deviceId, setDeviceId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<TicketFormData>({
     participants: [{ fullName: '', phone: '', docNumber: '', gender: GenderEnum.HOMBRE }],
@@ -154,7 +150,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
   const handleGoToPay = async () => {
     setIsSubmitting(true);
     try {
-      const res = await createPreference(prevent!.id, participantCount, deviceId!);
+      const res = await createPreference(prevent!.id, participantCount);
       if (res.success && res.data.preferenceId) {
         setPreferenceId(res.data.preferenceId);
       } else toast.error('Error al generar la preferencia de pago');
@@ -176,16 +172,6 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
     setPreferenceId(null);
     onGetTickets();
   };
-
-  useEffect(() => {
-    (async () => {
-      await loadMercadoPago();
-      const mp = new window.MercadoPago(MP_PUBLIC_KEY, { locale: 'es-AR' });
-      const id = await mp.getDeviceId();
-      setDeviceId(id);
-    })();
-  }, []);
-
 
   const renderStepContent = () => {
     if (formStep === 0) {
@@ -414,7 +400,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
           </div>
 
           {formStep + 1 === formData.participants.length + 2 && (
-            <div className="grid grid-cols-2 gap-4 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-center">
               <div>
                 <h3 className="text-xs font-bold text-blue-600">
                   Subtotal: {formatPrice(baseTotal)}
@@ -428,7 +414,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
                   Total: {formatPrice(totalPrice)}
                 </h3>
               </div>
-              <div className="col-span-2 border-b" />
+              <div className="col-span-2 border-b mt-2" />
             </div>
           )}
         </div>

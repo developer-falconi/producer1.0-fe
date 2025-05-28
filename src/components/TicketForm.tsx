@@ -414,7 +414,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
           </div>
 
           {formStep + 1 === formData.participants.length + 2 && (
-            <div className="grid grid-cols-2 gap-4 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-center">
               <div>
                 <h3 className="text-xs font-bold text-blue-600">
                   Subtotal: {formatPrice(baseTotal)}
@@ -428,7 +428,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
                   Total: {formatPrice(totalPrice)}
                 </h3>
               </div>
-              <div className="col-span-2 border-b" />
+              <div className="col-span-2 border-b mt-2" />
             </div>
           )}
         </div>

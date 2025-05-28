@@ -336,6 +336,9 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
 
           {paymentMethod === 'transferencia' && (
             <div className='flex flex-col gap-2'>
+              <p className='text-lg font-bold text-white text-left'>
+                Alias: {event.alias}
+              </p>
               <p className='italic text-xs text-blue-600 text-left'>La acreditación demora hasta 3 días</p>
               <Label htmlFor="comprobante">Subí tu comprobante</Label>
               <Input

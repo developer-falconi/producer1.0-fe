@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchProducerData } from './services/api';
 import { Event, EventStatus, PreventStatusEnum, Producer } from './types/types';
 import Navbar from './components/Navbar';
@@ -24,6 +24,7 @@ const App: React.FC = () => {
   const [showTicketForm, setShowTicketForm] = useState<boolean>(false);
   const ticketFormRef = useRef<HTMLDivElement>(null);
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -102,6 +103,19 @@ const App: React.FC = () => {
     toggleTicketForm();
   };
 
+  const handleSelectEvent = useCallback((event: Event) => {
+    if (event.status === EventStatus.ACTIVE && event.id !== activeEvent?.id) {
+      setIsTransitioning(true);
+      setShowTicketForm(false);
+
+      setTimeout(() => {
+        setActiveEvent(event);
+        setIsTransitioning(false);
+        window.scrollTo({ top: 10, behavior: 'smooth' });
+      }, 500);
+    }
+  }, [activeEvent]);
+
   const lastActivePrevent = useMemo(() =>
     activeEvent?.prevents
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -159,10 +173,17 @@ const App: React.FC = () => {
           {/* Content */}
           <div className="container mx-auto flex flex-col md:flex-row items-center justify-between z-10">
             {/* Event information */}
-            <ActiveEvent
-              event={activeEvent}
-              onGetTickets={toggleTicketForm}
-            />
+            <div
+              className={cn(
+                "transition-all duration-500 ease-in-out transform",
+                isTransitioning ? "opacity-0 -translate-x-full" : "opacity-100 translate-x-0"
+              )}
+            >
+              <ActiveEvent
+                event={activeEvent}
+                onGetTickets={toggleTicketForm}
+              />
+            </div>
 
             <div
               ref={ticketFormRef}
@@ -207,7 +228,11 @@ const App: React.FC = () => {
         </div>
 
         {/* Events List */}
-        <EventsList events={producer.events} />
+        <EventsList
+          events={producer.events}
+          selectedEvent={activeEvent}
+          onSelectEvent={handleSelectEvent}
+        />
 
         {/* Contact Section */}
         <Contact producer={producer} />

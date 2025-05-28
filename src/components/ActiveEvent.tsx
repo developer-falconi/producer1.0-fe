@@ -10,13 +10,23 @@ interface ActiveEventProps {
 }
 
 const ActiveEvent: React.FC<ActiveEventProps> = ({ event, onGetTickets }) => {
+
+  const renderDescriptionWithLineBreaks = (text: string) => {
+    return text.split('\n').map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        {index < text.split('\n').length - 1 && <br />}
+      </React.Fragment>
+    ));
+  };
+
   return (
-    <div className="w-full md:w-1/2 z-10 p-2">
+    <div className="w-full z-10 p-4">
       <div className="inline-block px-4 py-1 bg-green-800 rounded-full mb-4">
         <p className="text-white font-medium">Active Event</p>
       </div>
 
-      <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-6">
+      <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-6 line-clamp-2 leading-tight">
         {event.name}
       </h1>
 
@@ -44,7 +54,9 @@ const ActiveEvent: React.FC<ActiveEventProps> = ({ event, onGetTickets }) => {
         </div>
       </div>
 
-      <p className="text-gray-200 mb-6">{event.description}</p>
+      <p className="text-gray-200 mb-6">
+        {renderDescriptionWithLineBreaks(event.description)}
+      </p>
 
       <CountdownTimer targetDate={event.startDate} />
 

@@ -36,7 +36,7 @@ const App: React.FC = () => {
           setProducer(response.data!);
 
           const active = response.data!.events.find(
-            event => event.status === EventStatus.ACTIVE
+            event => event.status === EventStatus.ACTIVE && event.prevents[0]?.price > 0
           );
 
           if (active) {
@@ -119,8 +119,9 @@ const App: React.FC = () => {
   const lastActivePrevent = useMemo(() =>
     activeEvent?.prevents
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .find((prevent) => prevent.status === PreventStatusEnum.ACTIVE),
-    [activeEvent])
+      .find((prevent) => prevent.status === PreventStatusEnum.ACTIVE)
+    , [activeEvent]
+  )
 
   if (loading) {
     return (
@@ -192,20 +193,28 @@ const App: React.FC = () => {
               {/* 1) Flyer/Form layer */}
               <div
                 className={cn(
-                  'absolute inset-0 flex justify-center items-center transition-all duration-500 ease-in-out',
-                  paymentStatus ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'
+                  'absolute inset-0 flex justify-center items-center transition-opacity duration-700 ease-in-out',
+                  !showTicketForm ? 'opacity-100 z-20' : 'opacity-0 -z-10 pointer-events-none'
                 )}
               >
-                {/* when no paymentStatus, show flyer OR form layers */}
-                {!showTicketForm ? (
-                  <div className="rounded-lg overflow-hidden shadow-2xl">
-                    <img
-                      src={activeEvent.logo}
-                      alt={`${activeEvent.name} flyer`}
-                      className="w-full h-auto max-w-md"
-                    />
-                  </div>
-                ) : (
+                {/* Image (Flyer) - Visible by default */}
+                <div className="rounded-lg overflow-hidden shadow-2xl">
+                  <img
+                    src={activeEvent.logo}
+                    alt={`${activeEvent.name} flyer`}
+                    className="w-full h-auto max-w-md"
+                  />
+                </div>
+              </div>
+
+              <div
+                className={cn(
+                  'absolute inset-0 flex justify-center items-center transition-opacity duration-700 ease-in-out',
+                  showTicketForm ? 'opacity-100 z-20' : 'opacity-0 -z-10 pointer-events-none'
+                )}
+              >
+                {/* Ticket Form - Hidden by default */}
+                {showTicketForm && activeEvent.prevents.length > 0 && (
                   <TicketForm
                     event={activeEvent}
                     onGetTickets={toggleTicketForm}
@@ -247,7 +256,7 @@ const App: React.FC = () => {
               rel="noopener noreferrer"
               className="text-gray-300 hover:text-white transition-colors"
             >
-              PRODUTIK
+              Produtik
             </a>
           </p>
         </footer>

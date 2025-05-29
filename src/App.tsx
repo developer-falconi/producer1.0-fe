@@ -35,9 +35,9 @@ const App: React.FC = () => {
         if (response.success) {
           setProducer(response.data!);
 
-          const active = response.data!.events.find(
-            event => event.status === EventStatus.ACTIVE && event.prevents[0]?.price > 0
-          );
+          const active = response.data!.events
+            .sort((a,b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
+            .find(event => event.status === EventStatus.ACTIVE);
 
           if (active) {
             setActiveEvent(active);

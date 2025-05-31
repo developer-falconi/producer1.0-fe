@@ -1,4 +1,4 @@
-import { ApiResponse, ClientTypeEnum, PreferenceData, Producer } from "@/types/types";
+import { ApiResponse, ClientTypeEnum, Participant, PreferenceData, Producer } from "@/types/types";
 
 const API_URL = import.meta.env.VITE_APP_API_BE;
 
@@ -15,9 +15,14 @@ export async function fetchProducerData(): Promise<ApiResponse<Producer>> {
   }
 }
 
-export async function submitTicketForm(formData: FormData, eventId: number): Promise<ApiResponse<any>> {
+export async function submitTicketForm(formData: FormData, eventId: number, preventId: number | null): Promise<ApiResponse<any>> {
   try {
-    const response = await fetch(`${API_URL}/client/create/${eventId}?type=${ClientTypeEnum.REGULAR}`, {
+    let url = `${API_URL}/client/create/${eventId}?type=${ClientTypeEnum.REGULAR}`;
+    if (preventId) {
+      url += `&prevent=${preventId}`;
+    }
+
+    const response = await fetch(url, {
       method: "POST",
       body: formData,
     });
@@ -34,12 +39,16 @@ export async function submitTicketForm(formData: FormData, eventId: number): Pro
 }
 
 export async function createPreference(
-  preventId: number, 
-  quantity: number
+  preventId: number,
+  clients: Participant[]
 ): Promise<ApiResponse<PreferenceData>> {
   try {
-    const response = await fetch(`${API_URL}/mercadopago/create?prevent=${preventId}&quantity=${quantity}`, {
-      method: "POST"
+    const response = await fetch(`${API_URL}/mercadopago/create?prevent=${preventId}`, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(clients)
     });
 
     if (!response.ok) {

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Event, GenderEnum, Participant, Prevent, SpinnerSize, TicketFormData } from '../types/types';
+import React, { useMemo, useState } from 'react';
+import { Event, GenderEnum, Participant, Prevent, PreventStatusEnum, SpinnerSize, TicketFormData } from '../types/types';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,7 @@ import Spinner from './Spinner';
 import { toast } from 'sonner';
 import { cn, formatPrice } from '@/lib/utils';
 import MercadoPagoButton from './MercadoPago';
+import SelectableCardList from './SelectablePrevents';
 
 interface TicketFormProps {
   event: Event;
@@ -24,6 +25,13 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('transferencia');
+  const [selectedPreventId, setSelectedPreventId] = useState<number | null>(null);
+
+  const activePrevents = useMemo(
+    () => event.prevents.filter(p => p.status === PreventStatusEnum.ACTIVE),
+    [event.prevents]
+  );
+  const selectedPrevent = activePrevents.find(p => p.id === selectedPreventId);
 
   const [formData, setFormData] = useState<TicketFormData>({
     participants: [{ fullName: '', phone: '', docNumber: '', gender: GenderEnum.HOMBRE }],
@@ -32,9 +40,9 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
   });
 
   const participantCount = formData.participants.length;
-  const totalSteps = participantCount + 2;
+  const totalSteps = participantCount + 3;
   const mpFeeRate = 0.0824;
-  const baseTotal = prevent!.price * formData.participants.length;
+  const baseTotal = (selectedPrevent?.price || 0) * formData.participants.length;
   const totalPrice = paymentMethod === 'mercadopago'
     ? Math.round(baseTotal * (1 + mpFeeRate) * 100) / 100
     : baseTotal;
@@ -81,12 +89,13 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
   };
 
   const validateCurrentStep = () => {
-    if (formStep === 0) return ticketCount > 0;
-    if (formStep >= 1 && formStep <= participantCount) {
-      const p = formData.participants[formStep - 1];
-      return p.fullName && p.phone && p.docNumber;
+    if (formStep === 0) return !!selectedPrevent;
+    if (formStep === 1) return ticketCount > 0;
+    if (formStep <= participantCount) {
+      const p = formData.participants[formStep - 2];
+      return !!(p.fullName && p.phone && p.docNumber);
     }
-    if (formStep === participantCount + 1) {
+    if (formStep === participantCount + 2) {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) return false;
       if (paymentMethod === 'transferencia' && !formData.comprobante) return false;
     }
@@ -132,7 +141,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
         submitData.append('comprobante', formData.comprobante);
       }
 
-      const result = await submitTicketForm(submitData, event.id);
+      const result = await submitTicketForm(submitData, event.id, selectedPreventId);
 
       if (result.success) {
         toast.success("Entradas solicitadas. Una vez validado tu pago te las enviaremos por mail");
@@ -149,8 +158,12 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
 
   const handleGoToPay = async () => {
     setIsSubmitting(true);
+    const updatedParticipants = formData.participants.map(participant => ({
+      ...participant,
+      email: formData.email
+    }));
     try {
-      const res = await createPreference(prevent!.id, participantCount);
+      const res = await createPreference(selectedPreventId!, updatedParticipants);
       if (res.success && res.data.preferenceId) {
         setPreferenceId(res.data.preferenceId);
       } else toast.error('Error al generar la preferencia de pago');
@@ -177,6 +190,29 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
     if (formStep === 0) {
       return (
         <div className="space-y-4 text-white">
+          <SelectableCardList
+            activePrevents={activePrevents}
+            selectedPreventId={selectedPreventId}
+            setSelectedPreventId={setSelectedPreventId}
+          />
+
+          <div className="flex items-center gap-2 w-full">
+            <Button onClick={onGetTickets} className="w-1/2 bg-red-800 hover:bg-red-700">
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => setFormStep(1)}
+              disabled={!selectedPrevent}
+              className="w-1/2 bg-sky-800 hover:bg-sky-700"
+            >
+              Continuar
+            </Button>
+          </div>
+        </div>
+      );
+    } else if (formStep === 1) {
+      return (
+        <div className="space-y-4 text-white">
           <div>
             <Label htmlFor="ticketCount">¿Cuántas entradas quieres?</Label>
             <select
@@ -193,10 +229,10 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
 
           <div className="flex items-center gap-2 w-full">
             <Button
-              onClick={onGetTickets}
+              onClick={prevStep}
               className="w-1/2 bg-red-800 hover:bg-red-700"
             >
-              Cancelar
+              Atrás
             </Button>
             <Button
               onClick={nextStep}
@@ -207,8 +243,8 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
           </div>
         </div>
       );
-    } else if (formStep <= formData.participants.length) {
-      const participantIndex = formStep - 1;
+    } else if (formStep > 1 && formStep <= 1 + participantCount) {
+      const participantIndex = formStep - 2;
       const participant = formData.participants[participantIndex];
 
       return (
@@ -283,7 +319,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
           </div>
         </div>
       );
-    } if (formStep === participantCount + 1) {
+    } if (formStep === participantCount + 2) {
       return (
         <div className="space-y-4 text-white">
           <Label htmlFor="email">Email</Label>
@@ -308,7 +344,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
               />
               <span className="text-white">Transferencia</span>
             </label>
-            {/* <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
                 name="payment"
@@ -317,7 +353,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
                 className="h-5 w-5 border bg-gray-800 rounded-none text-blue-800 focus:ring-2 focus:ring-blue-600"
               />
               <span className="text-white">MercadoPago</span>
-            </label> */}
+            </label>
           </div>
 
           {paymentMethod === 'transferencia' && (
@@ -344,7 +380,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
                 <Button
                   onClick={handleSubmit}
                   disabled={formData.email.length === 0}
-                  className="w-1/2 bg-green-800"
+                  className="w-1/2 bg-green-800 hover:bg-green-700"
                 >
                   {isSubmitting ? <Spinner size={SpinnerSize.SMALL} /> : 'Enviar'}
                 </Button>
@@ -366,7 +402,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
                   <Button
                     onClick={handleGoToPay}
                     disabled={formData.email.length === 0}
-                    className="w-1/2 bg-green-800"
+                    className="w-1/2 bg-green-800 hover:bg-green-700"
                   >
                     {isSubmitting ? 'Generando pago...' : 'Ir a pagar'}
                   </Button>
@@ -385,21 +421,28 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
 
   return (
     <div className="bg-black/70 backdrop-blur-sm p-4 rounded-lg shadow-lg w-full max-w-md">
-      {prevent && (
+      {prevent && selectedPrevent && formStep >= 1 && (
         <div className="mb-4">
-          <div className='flex items-center justify-between'>
-            <h2 className="text-2xl font-bold text-green-600 mb-3">
-              {prevent.name}
+          <div className="flex items-center justify-between">
+            <h2
+              className={cn(
+                formStep === formData.participants.length + 2 ? 'text-lg' : 'text-2xl',
+                'font-bold text-green-600 mb-3'
+              )}
+            >
+              {selectedPrevent.name}
             </h2>
-            <h2 className={cn(
-              "text-2xl font-bold text-green-600 mb-3",
-              formStep + 1 === formData.participants.length + 2 && 'text-lg'
-            )}>
-              {formatPrice(prevent.price)}
+            <h2
+              className={cn(
+                formStep === formData.participants.length + 2 ? 'text-lg' : 'text-2xl',
+                'font-bold text-green-600 mb-3'
+              )}
+            >
+              {formatPrice(selectedPrevent.price)}
             </h2>
           </div>
 
-          {formStep + 1 === formData.participants.length + 2 && (
+          {formStep === formData.participants.length + 2 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-center">
               <div>
                 <h3 className="text-xs font-bold text-blue-600">

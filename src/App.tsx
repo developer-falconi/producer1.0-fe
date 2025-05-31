@@ -36,7 +36,7 @@ const App: React.FC = () => {
           setProducer(response.data!);
 
           const active = response.data!.events
-            .sort((a,b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
+            .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
             .find(event => event.status === EventStatus.ACTIVE);
 
           if (active) {
@@ -84,6 +84,8 @@ const App: React.FC = () => {
   }, [paymentStatus]);
 
   const toggleTicketForm = () => {
+    if (paymentStatus) return;
+
     if (activeEvent && activeEvent?.prevents.length > 0) {
       setShowTicketForm(!showTicketForm);
       if (!showTicketForm && window.innerWidth < 768 && ticketFormRef.current) {
@@ -194,10 +196,11 @@ const App: React.FC = () => {
               <div
                 className={cn(
                   'absolute inset-0 flex justify-center items-center transition-opacity duration-700 ease-in-out',
-                  !showTicketForm ? 'opacity-100 z-20' : 'opacity-0 -z-10 pointer-events-none'
+                  !showTicketForm && !paymentStatus
+                    ? 'opacity-100 z-20'
+                    : 'opacity-0 -z-10 pointer-events-none'
                 )}
               >
-                {/* Image (Flyer) - Visible by default */}
                 <div className="rounded-lg overflow-hidden shadow-2xl">
                   <img
                     src={activeEvent.logo}
@@ -210,10 +213,11 @@ const App: React.FC = () => {
               <div
                 className={cn(
                   'absolute inset-0 flex justify-center items-center transition-opacity duration-700 ease-in-out',
-                  showTicketForm ? 'opacity-100 z-20' : 'opacity-0 -z-10 pointer-events-none'
+                  showTicketForm && !paymentStatus
+                    ? 'opacity-100 z-20'
+                    : 'opacity-0 -z-10 pointer-events-none'
                 )}
               >
-                {/* Ticket Form - Hidden by default */}
                 {showTicketForm && activeEvent.prevents.length > 0 && (
                   <TicketForm
                     event={activeEvent}
@@ -227,7 +231,9 @@ const App: React.FC = () => {
               <div
                 className={cn(
                   'absolute inset-0 flex justify-center items-center transition-all duration-500 ease-in-out',
-                  paymentStatus ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
+                  paymentStatus
+                    ? 'opacity-100 scale-100 z-30'
+                    : 'opacity-0 scale-95 pointer-events-none'
                 )}
               >
                 {paymentStatus && <PaymentResult status={paymentStatus.status} />}

@@ -15,9 +15,14 @@ export async function fetchProducerData(): Promise<ApiResponse<Producer>> {
   }
 }
 
-export async function submitTicketForm(formData: FormData, eventId: number): Promise<ApiResponse<any>> {
+export async function submitTicketForm(formData: FormData, eventId: number, preventId: number | null): Promise<ApiResponse<any>> {
   try {
-    const response = await fetch(`${API_URL}/client/create/${eventId}?type=${ClientTypeEnum.REGULAR}`, {
+    let url = `${API_URL}/client/create/${eventId}?type=${ClientTypeEnum.REGULAR}`;
+    if (preventId) {
+      url += `&prevent=${preventId}`;
+    }
+
+    const response = await fetch(url, {
       method: "POST",
       body: formData,
     });
@@ -34,7 +39,7 @@ export async function submitTicketForm(formData: FormData, eventId: number): Pro
 }
 
 export async function createPreference(
-  preventId: number, 
+  preventId: number,
   quantity: number
 ): Promise<ApiResponse<PreferenceData>> {
   try {

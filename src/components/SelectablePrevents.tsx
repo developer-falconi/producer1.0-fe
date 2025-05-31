@@ -20,7 +20,7 @@ const SelectableCardList: React.FC<SelectableCardListProps> = ({
 }) => {
   return (
     <div>
-      <h3 className="mb-2 text-lg font-semibold">Elige un horario</h3>
+      <h3 className="mb-2 text-lg font-semibold">Selecciona:</h3>
       <div className="flex flex-col gap-2">
         {activePrevents.map(prevent => (
           <div

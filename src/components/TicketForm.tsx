@@ -158,8 +158,12 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
 
   const handleGoToPay = async () => {
     setIsSubmitting(true);
+    const updatedParticipants = formData.participants.map(participant => ({
+      ...participant,
+      email: formData.email
+    }));
     try {
-      const res = await createPreference(prevent!.id, participantCount);
+      const res = await createPreference(selectedPreventId!, updatedParticipants);
       if (res.success && res.data.preferenceId) {
         setPreferenceId(res.data.preferenceId);
       } else toast.error('Error al generar la preferencia de pago');

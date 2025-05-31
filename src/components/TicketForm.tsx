@@ -423,19 +423,26 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
     <div className="bg-black/70 backdrop-blur-sm p-4 rounded-lg shadow-lg w-full max-w-md">
       {prevent && selectedPrevent && formStep >= 1 && (
         <div className="mb-4">
-          <div className='flex items-center justify-between'>
-            <h2 className="text-2xl font-bold text-green-600 mb-3">
+          <div className="flex items-center justify-between">
+            <h2
+              className={cn(
+                formStep === formData.participants.length + 2 ? 'text-lg' : 'text-2xl',
+                'font-bold text-green-600 mb-3'
+              )}
+            >
               {selectedPrevent.name}
             </h2>
-            <h2 className={cn(
-              "text-2xl font-bold text-green-600 mb-3",
-              formStep + 1 === formData.participants.length + 2 && 'text-lg'
-            )}>
+            <h2
+              className={cn(
+                formStep === formData.participants.length + 2 ? 'text-lg' : 'text-2xl',
+                'font-bold text-green-600 mb-3'
+              )}
+            >
               {formatPrice(selectedPrevent.price)}
             </h2>
           </div>
 
-          {formStep + 1 === formData.participants.length + 2 && (
+          {formStep === formData.participants.length + 2 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-center">
               <div>
                 <h3 className="text-xs font-bold text-blue-600">

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Event, GenderEnum, Participant, Prevent, PreventStatusEnum, SpinnerSize, TicketFormData } from '../types/types';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,9 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { createPreference, submitTicketForm } from '../services/api';
 import Spinner from './Spinner';
 import { toast } from 'sonner';
-import { cn, formatPrice } from '@/lib/utils';
+import { cn, decryptAES256CBC, formatPrice } from '@/lib/utils';
 import MercadoPagoButton from './MercadoPago';
 import SelectableCardList from './SelectablePrevents';
+
+const AES_KEY_HEX = import.meta.env.VITE_APP_AES_SECRET_KEY_HEX;
 
 interface TicketFormProps {
   event: Event;
@@ -26,6 +28,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('transferencia');
   const [selectedPreventId, setSelectedPreventId] = useState<number | null>(null);
+  const [publicKey, setPublicKey] = useState<string>("");
 
   const activePrevents = useMemo(
     () => event.prevents.filter(p => p.status === PreventStatusEnum.ACTIVE),
@@ -59,6 +62,19 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
       participants: newParticipants
     });
   };
+
+  useEffect(() => {
+    async function doDecrypt() {
+      try {
+        const decryptedPub = await decryptAES256CBC(event?.mercadoPago?.publicKey || '', AES_KEY_HEX);
+        console.log(decryptedPub)
+        setPublicKey(decryptedPub);
+      } catch (err) {
+        console.error("🔐 Decryption error:", err);
+      }
+    }
+    doDecrypt();
+  }, [event]);
 
   const handleTicketCountChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const count = parseInt(e.target.value);
@@ -166,7 +182,10 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
       const res = await createPreference(selectedPreventId!, updatedParticipants);
       if (res.success && res.data.preferenceId) {
         setPreferenceId(res.data.preferenceId);
-      } else toast.error('Error al generar la preferencia de pago');
+      }
+      if(!res.success) {
+        toast.error(res.message);
+      }
     } catch {
       toast.error('Error al contactar a Mercado Pago');
     } finally {
@@ -344,7 +363,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
               />
               <span className="text-white">Transferencia</span>
             </label>
-            {/* <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
                 name="payment"
@@ -353,7 +372,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
                 className="h-5 w-5 border bg-gray-800 rounded-none text-blue-800 focus:ring-2 focus:ring-blue-600"
               />
               <span className="text-white">MercadoPago</span>
-            </label> */}
+            </label>
           </div>
 
           {paymentMethod === 'transferencia' && (
@@ -408,7 +427,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
                   </Button>
                 </div>
               ) : (
-                <MercadoPagoButton preferenceId={preferenceId} />
+                <MercadoPagoButton preferenceId={preferenceId} MP_PUBLIC_KEY={publicKey} />
               )}
             </div>
           )}

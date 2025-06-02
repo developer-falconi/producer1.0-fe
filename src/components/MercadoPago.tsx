@@ -1,27 +1,24 @@
 import React from 'react';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 
-// Retrieve the Public Key from environment variables
-const MP_PUBLIC_KEY = import.meta.env.VITE_APP_MP_PUBLIC_KEY;
-
-// Initialize Mercado Pago SDK only if the public key is available
-if (MP_PUBLIC_KEY) {
-  initMercadoPago(MP_PUBLIC_KEY, {
-    locale: 'es-AR',
-  });
-} else {
-  console.error(
-    'Error: Mercado Pago Public Key (VITE_APP_MP_PUBLIC_KEY) is missing. ' +
-    'The Mercado Pago Button will not work correctly. ' +
-    'Please ensure it is set in your .env file and the project is rebuilt if necessary.'
-  );
-}
-
 interface MercadoPagoButtonProps {
   preferenceId: string | null;
+  MP_PUBLIC_KEY: string;
 }
 
-const MercadoPagoButton: React.FC<MercadoPagoButtonProps> = ({ preferenceId }) => {
+const MercadoPagoButton: React.FC<MercadoPagoButtonProps> = ({ preferenceId, MP_PUBLIC_KEY }) => {
+  if (MP_PUBLIC_KEY) {
+    initMercadoPago(MP_PUBLIC_KEY, {
+      locale: 'es-AR',
+    });
+  } else {
+    console.error(
+      'Error: Mercado Pago Public Key (VITE_APP_MP_PUBLIC_KEY) is missing. ' +
+      'The Mercado Pago Button will not work correctly. ' +
+      'Please ensure it is set in your .env file and the project is rebuilt if necessary.'
+    );
+  }
+
   const initialization: any = { redirectMode: 'self', preferenceId }
 
   const handleOnSubmit = async () => {

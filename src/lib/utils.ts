@@ -34,7 +34,6 @@ export function calculateTimeRemaining(targetDate: string): {
   const target = new Date(targetDate);
   const difference = target.getTime() - now.getTime();
 
-  // If the date has passed, return all zeros
   if (difference <= 0) {
     return { days: 0, hours: 0, minutes: 0, seconds: 0 };
   }
@@ -89,3 +88,50 @@ export const formatPrice = (price: string | number): string => {
     maximumFractionDigits: 2,
   }).format(numericPrice);
 };
+
+export function hexToUint8Array(hex: string): Uint8Array {
+  if (hex.length % 2 !== 0) {
+    throw new Error("hex string must have even length");
+  }
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < bytes.length; i++) {
+    bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+  }
+  return bytes;
+}
+
+export async function decryptAES256CBC(
+  encrypted: string,
+  keyHex: string
+): Promise<string> {
+  const subtle = window.crypto?.subtle;
+  if (!subtle) {
+    throw new Error("Web Crypto API is not available");
+  }
+
+  const [ivHex, cipherHex] = encrypted.split(":");
+  if (!ivHex || !cipherHex) {
+    throw new Error("Invalid encrypted data format — missing colon");
+  }
+
+  const ivBytes = hexToUint8Array(ivHex);
+  const cipherBytes = hexToUint8Array(cipherHex);
+  const keyBytes = hexToUint8Array(keyHex);
+
+  const cryptoKey = await subtle.importKey(
+    "raw",
+    keyBytes,
+    { name: "AES-CBC" },
+    false,
+    ["decrypt"]
+  );
+
+  const decryptedBuffer = await subtle.decrypt(
+    { name: "AES-CBC", iv: ivBytes },
+    cryptoKey,
+    cipherBytes
+  );
+
+  const decoder = new TextDecoder();
+  return decoder.decode(decryptedBuffer);
+}

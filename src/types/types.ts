@@ -18,6 +18,7 @@ export interface Producer {
   name: string;
   domain: string;
   firebaseWebAppId: string;
+  googleAnalyticsId: string;
   status: string;
   logo: string;
   instagram: string;

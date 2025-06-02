@@ -66,6 +66,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
   useEffect(() => {
     async function doDecrypt() {
       try {
+        console.log(event.mercadoPago?.publicKey, AES_KEY_HEX)
         const decryptedPub = await decryptAES256CBC(event?.mercadoPago?.publicKey || '', AES_KEY_HEX);
         console.log(decryptedPub)
         setPublicKey(decryptedPub);

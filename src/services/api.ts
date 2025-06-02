@@ -40,7 +40,7 @@ export async function submitTicketForm(formData: FormData, eventId: number, prev
 
 export async function createPreference(
   preventId: number,
-  clients: Participant[]
+  clients: Participant[],
 ): Promise<ApiResponse<PreferenceData>> {
   try {
     const response = await fetch(`${API_URL}/mercadopago/create?prevent=${preventId}`, {

@@ -30,6 +30,7 @@ jobs:
         env:
           VITE_APP_API_BE: ${{ secrets.VITE_APP_API_BE_DEV }}
           VITE_APP_MP_PUBLIC_KEY: ${{ secrets.VITE_APP_MP_PUBLIC_KEY_DEV }}
+          VITE_APP_AES_SECRET_KEY_HEX: ${{ secrets.VITE_APP_AES_SECRET_KEY_HEX }}
           CI: true
 
       - name: Configure Git for commit

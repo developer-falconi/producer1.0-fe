@@ -18,6 +18,7 @@ export interface Producer {
   name: string;
   domain: string;
   firebaseWebAppId: string;
+  googleAnalyticsId: string;
   status: string;
   logo: string;
   instagram: string;
@@ -51,7 +52,7 @@ export interface Event {
   createdAt: string;
   updatedAt: string;
   prevents: Prevent[];
-  mercadopago?: boolean;
+  mercadoPago?: MercadoPagoConfigDto;
 }
 
 export interface Prevent {
@@ -96,7 +97,7 @@ export interface TicketFormData {
 
 export type ApiResponse<T> =
   | { success: true; data: T }
-  | { success: false; data?: never; error?: string };
+  | { success: false; data?: never; message?: string };
 
 export enum SpinnerSize {
   SMALL = "small",
@@ -112,4 +113,14 @@ export enum ClientTypeEnum {
 
 export interface PreferenceData {
   preferenceId: string
+}
+
+export interface MercadoPagoConfigDto {
+  id: number;
+  accountName: string;
+  publicKey: string;
+  accessToken: string;
+  webhookSecret: string;
+  updatedAt: string;
+  createdAt: string;
 }

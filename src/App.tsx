@@ -11,6 +11,8 @@ import Contact from './components/Contact';
 import { cn } from './lib/utils';
 import DynamicFavicon from './components/DynamicFavicon';
 import PaymentResult from './components/PaymentResult';
+import { initializeGoogleAnalytics } from './lib/analytics';
+
 
 interface PaymentStatus {
   status: string;
@@ -42,6 +44,7 @@ const App: React.FC = () => {
           if (active) {
             setActiveEvent(active);
           }
+          initializeGoogleAnalytics(response.data.googleAnalyticsId);
         }
       } catch (error) {
         console.error('Failed to fetch data:', error);

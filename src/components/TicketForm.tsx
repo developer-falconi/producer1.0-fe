@@ -364,7 +364,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
               />
               <span className="text-white">Transferencia</span>
             </label>
-            <label className="flex items-center gap-2 cursor-pointer">
+            {/* <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
                 name="payment"
@@ -373,7 +373,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
                 className="h-5 w-5 border bg-gray-800 rounded-none text-blue-800 focus:ring-2 focus:ring-blue-600"
               />
               <span className="text-white">MercadoPago</span>
-            </label>
+            </label> */}
           </div>
 
           {paymentMethod === 'transferencia' && (

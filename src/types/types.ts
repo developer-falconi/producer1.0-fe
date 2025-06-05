@@ -22,6 +22,8 @@ export interface Producer {
   status: string;
   logo: string;
   instagram: string;
+  youtube: string;
+  tiktok: string;
   phone: string;
   createdAt: string;
   updatedAt: string;

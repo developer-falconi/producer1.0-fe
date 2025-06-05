@@ -7,12 +7,12 @@ interface ContactProps {
 
 const Contact: React.FC<ContactProps> = ({ producer }) => {
   return (
-    <div className="w-full bg-gray-900/50 backdrop-blur-sm py-16" id="contact">
+    <div className="w-full bg-gray-900/50 backdrop-blur-sm py-4" id="contact">
       <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-white mb-12">Contactanos</h2>
+        <div className="max-w-full mx-auto text-center">
+          <h2 className="text-3xl font-bold text-white mb-8">Contactanos</h2>
 
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
+          <div className="grid grid-cols-1 md:grid-cols-4 items-center justify-center gap-4 md:gap-16">
             {/* Instagram */}
             {producer.instagram && (
               <a
@@ -59,6 +59,38 @@ const Contact: React.FC<ContactProps> = ({ producer }) => {
                   </svg>
                 </div>
                 <span className="text-lg">{producer.phone}</span>
+              </a>
+            )}
+
+            {producer.youtube && (
+              <a
+                href={producer.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-start w-full gap-3 text-gray-300 hover:text-white transition-colors group"
+              >
+                <div className="bg-gray-800 p-4 rounded-full group-hover:bg-gray-700 transition-colors">
+                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M549.7 124.1c-6.3-23.7-24.9-42.4-48.6-48.6C456.5 64 288 64 288 64s-168.5 0-213.1 11.5c-23.7 6.3-42.4 24.9-48.6 48.6C16.8 168.7 16 224 16 224s.8 55.3 10.3 99.9c6.3 23.7 24.9 42.4 48.6 48.6C119.5 384 288 384 288 384s168.5 0 213.1-11.5c23.7-6.3 42.4-24.9 48.6-48.6 9.5-44.6 10.3-99.9 10.3-99.9s-.8-55.3-10.3-99.9zM232 312V136l142 88-142 88z" />
+                  </svg>
+                </div>
+                <span className="text-lg">Youtube</span>
+              </a>
+            )}
+
+            {producer.tiktok && (
+              <a
+                href={producer.tiktok}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-start w-full gap-3 text-gray-300 hover:text-white transition-colors group"
+              >
+                <div className="bg-gray-800 p-4 rounded-full group-hover:bg-gray-700 transition-colors">
+                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M168.6 35.3c-4.5-5.1-7.8-11.1-9.6-17.5H126v137.1c0 7.1-2.7 14-7.5 19.1-4.8 5.2-11.3 8.5-18.3 9.2-7 .7-14.1-1.1-19.9-5s-9.9-9.5-11.5-16.1c-1.6-6.6-.6-13.5 2.6-19.4 3.3-5.9 8.6-10.5 15-12.8 3.2-1.1 6.5-1.6 9.9-1.6 3.6 0 7.2.6 10.6 1.8V93.5c-8.5-1.3-17.3-1-25.7.9-15.6 3.5-29.4 13.3-37.8 27-8.4 13.7-11.2 30.3-7.9 46 3.3 15.7 12.3 29.8 25 39.2s28.7 13.9 44.6 12.2c15.9-1.7 30.5-9.8 40.6-22.5 8.9-11.1 13.7-25.1 13.7-39.3V93.8c10.6 7.5 23.1 12.8 36 15.4V73.1c-6.4-.1-12.8-1.4-18.7-3.8-6.2-2.5-11.9-6.2-16.7-10.9z" />
+                  </svg>
+                </div>
+                <span className="text-lg">TikTok</span>
               </a>
             )}
           </div>

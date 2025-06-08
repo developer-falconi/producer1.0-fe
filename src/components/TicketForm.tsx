@@ -381,7 +381,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
               <p className='text-lg font-bold text-white text-left'>
                 Alias: {event.alias}
               </p>
-              <p className='italic text-xs text-blue-600 text-left'>La acreditación demora hasta 3 días</p>
+              {/* <p className='italic text-xs text-blue-600 text-left'>La acreditación demora hasta 3 días</p> */}
               <Label htmlFor="comprobante">Subí tu comprobante</Label>
               <Input
                 id="comprobante"

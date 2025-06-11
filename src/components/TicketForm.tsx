@@ -289,6 +289,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
             <Input
               id="phone"
               value={participant.phone || ''}
+              inputMode='numeric'
               onChange={(e) => updateParticipant(participantIndex, 'phone', e.target.value)}
               className="bg-producer-dark/50 border-producer/30 text-white"
               placeholder="Teléfono..."
@@ -300,6 +301,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
             <Input
               id="dni"
               value={participant.docNumber || ''}
+              inputMode='numeric'
               onChange={(e) => updateParticipant(participantIndex, 'docNumber', e.target.value)}
               className="bg-producer-dark/50 border-producer/30 text-white"
               placeholder="DNI..."

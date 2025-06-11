@@ -31,7 +31,7 @@ const ActiveEvent: React.FC<ActiveEventProps> = ({ event, onGetTickets }) => {
         {translateEventStatus(event.status)}
       </span>
 
-      <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-6 line-clamp-2 leading-tight">
+      <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-6 leading-tight">
         {event.name}
       </h1>
 

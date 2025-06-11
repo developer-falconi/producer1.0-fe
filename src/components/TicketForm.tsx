@@ -184,7 +184,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
       if (res.success && res.data.preferenceId) {
         setPreferenceId(res.data.preferenceId);
       }
-      if(!res.success) {
+      if (!res.success) {
         toast.error(res.message);
       }
     } catch {
@@ -210,11 +210,24 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
     if (formStep === 0) {
       return (
         <div className="space-y-4 text-white">
-          <SelectableCardList
-            activePrevents={activePrevents}
-            selectedPreventId={selectedPreventId}
-            setSelectedPreventId={setSelectedPreventId}
-          />
+          {
+            activePrevents.length === 0 ? (
+              <div
+                className={cn(
+                  'w-full p-4 border rounded-lg flex items-center justify-center',
+                  'border-red-600 text-red-600 font-bold'
+                )}
+              >
+                No hay preventas activas
+              </div>
+            ) : (
+              <SelectableCardList
+                activePrevents={activePrevents}
+                selectedPreventId={selectedPreventId}
+                setSelectedPreventId={setSelectedPreventId}
+              />
+            )
+          }
 
           <div className="flex items-center gap-2 w-full">
             <Button onClick={onGetTickets} className="w-1/2 bg-red-800 hover:bg-red-700">

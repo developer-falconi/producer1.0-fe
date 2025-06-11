@@ -70,7 +70,7 @@ export const eventStatusLabels: Record<EventStatus, string> = {
   [EventStatus.DRAFT]: 'BORRADOR',
   [EventStatus.COMPLETED]: 'COMPLETADO',
   [EventStatus.CANCELLED]: 'CANCELADO',
-  [EventStatus.UPCOMING]: 'PRÓXIMO',
+  [EventStatus.UPCOMING]: 'PRÓXIMAMENTE',
   [EventStatus.SUSPENDED]: 'SUSPENDIDO',
 };
 
@@ -135,3 +135,12 @@ export async function decryptAES256CBC(
   const decoder = new TextDecoder();
   return decoder.decode(decryptedBuffer);
 }
+
+export const statusPriority: EventStatus[] = [
+  EventStatus.ACTIVE,
+  EventStatus.UPCOMING,
+  EventStatus.COMPLETED,
+  EventStatus.CANCELLED,
+  EventStatus.SUSPENDED,
+  EventStatus.DRAFT,
+];

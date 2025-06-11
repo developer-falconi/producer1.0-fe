@@ -1,6 +1,6 @@
 import React from 'react';
-import { Event } from '@/types/types';
-import { formatDate, formatTime } from '@/lib/utils';
+import { Event, EventStatus } from '@/types/types';
+import { cn, formatDate, formatTime, getEventStatusStyles, translateEventStatus } from '@/lib/utils';
 import CountdownTimer from './CountdownTimer';
 import { Button } from './ui/button';
 
@@ -22,9 +22,14 @@ const ActiveEvent: React.FC<ActiveEventProps> = ({ event, onGetTickets }) => {
 
   return (
     <div className="w-full z-10 p-4">
-      <div className="inline-block px-4 py-1 bg-green-800 rounded-full mb-4">
-        <p className="text-white font-medium">Active Event</p>
-      </div>
+      <span
+        className={cn(
+          "inline-block px-2 py-1 rounded font-medium",
+          getEventStatusStyles(event.status)
+        )}
+      >
+        {translateEventStatus(event.status)}
+      </span>
 
       <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-6 line-clamp-2 leading-tight">
         {event.name}
@@ -63,7 +68,7 @@ const ActiveEvent: React.FC<ActiveEventProps> = ({ event, onGetTickets }) => {
       <div className="mt-6">
         <Button
           onClick={onGetTickets}
-          disabled={event.prevents.length === 0}
+          disabled={event.prevents.length === 0 || event.status !== EventStatus.ACTIVE}
           className="px-8 py-3 bg-green-800 hover:bg-green-700 text-white rounded-md text-lg transition-all duration-300 transform hover:scale-105"
         >
           Obtener Tickets

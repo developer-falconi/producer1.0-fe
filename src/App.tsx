@@ -8,7 +8,7 @@ import EventsList from './components/EventsList';
 import TicketForm from './components/TicketForm';
 import { Toaster } from 'sonner';
 import Contact from './components/Contact';
-import { cn } from './lib/utils';
+import { cn, statusPriority } from './lib/utils';
 import DynamicFavicon from './components/DynamicFavicon';
 import PaymentResult from './components/PaymentResult';
 import { initializeGoogleAnalytics } from './lib/analytics';
@@ -37,13 +37,20 @@ const App: React.FC = () => {
         if (response.success) {
           setProducer(response.data!);
 
-          const active = response.data!.events
-            .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
-            .find(event => event.status === EventStatus.ACTIVE);
+          const sorted = response.data.events.slice().sort(
+            (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+          );
 
-          if (active) {
-            setActiveEvent(active);
+          let selected: Event | null = null;
+          for (const status of statusPriority) {
+            const found = sorted.find(event => event.status === status);
+            if (found) {
+              selected = found;
+              break;
+            }
           }
+
+          setActiveEvent(selected);
           initializeGoogleAnalytics(response.data.googleAnalyticsId);
         }
       } catch (error) {
@@ -87,9 +94,9 @@ const App: React.FC = () => {
   }, [paymentStatus]);
 
   const toggleTicketForm = () => {
-    if (paymentStatus) return;
+    if (paymentStatus || !activeEvent) return;
 
-    if (activeEvent && activeEvent?.prevents.length > 0) {
+    if (activeEvent && activeEvent.prevents.length > 0 && activeEvent.status === EventStatus.ACTIVE) {
       setShowTicketForm(!showTicketForm);
       if (!showTicketForm && window.innerWidth < 768 && ticketFormRef.current) {
         const formTop = ticketFormRef.current.getBoundingClientRect().top + window.scrollY;
@@ -177,11 +184,11 @@ const App: React.FC = () => {
           />
 
           {/* Content */}
-          <div className="container mx-auto flex flex-col md:flex-row items-center justify-between z-10">
+          <div className="container mx-auto flex flex-col md:flex-row items-center justify-between z-10 gap-4">
             {/* Event information */}
             <div
               className={cn(
-                "transition-all duration-500 ease-in-out transform",
+                "transition-all duration-500 ease-in-out transform md:w-2/3",
                 isTransitioning ? "opacity-0 -translate-x-full" : "opacity-100 translate-x-0"
               )}
             >
@@ -193,7 +200,7 @@ const App: React.FC = () => {
 
             <div
               ref={ticketFormRef}
-              className="w-full md:w-1/2 flex justify-center items-center p-4 mt-8 md:mt-0 relative min-h-[700px]"
+              className="w-full md:w-1/3 flex justify-center items-center p-4 mt-8 md:mt-0 relative min-h-[700px]"
             >
               {/* 1) Flyer/Form layer */}
               <div

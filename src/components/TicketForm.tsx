@@ -35,6 +35,9 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
     [event.prevents]
   );
   const selectedPrevent = activePrevents.find(p => p.id === selectedPreventId);
+  const maxSelectable = selectedPrevent
+    ? Math.max(0, Math.min(10, selectedPrevent.remaining ?? 10))
+    : 0;
 
   const [formData, setFormData] = useState<TicketFormData>({
     participants: [{ fullName: '', phone: '', docNumber: '', gender: GenderEnum.HOMBRE }],
@@ -254,8 +257,10 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
               onChange={handleTicketCountChange}
               className="w-full p-2 mt-1 border border-producer/30 rounded-md text-white bg-gray-800 focus:border-producer focus:ring-1 focus:ring-producer outline-none"
             >
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
-                <option key={num} value={num}>{num}</option>
+              {Array.from({ length: maxSelectable }, (_, i) => i + 1).map(num => (
+                <option key={num} value={num}>
+                  {num}
+                </option>
               ))}
             </select>
           </div>

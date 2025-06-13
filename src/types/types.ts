@@ -62,6 +62,7 @@ export interface Prevent {
   name: string;
   price: number;
   quantity: number;
+  remaining?: number;
   status: PreventStatusEnum;
   startDate: Date;
   endDate: Date;

@@ -3,17 +3,17 @@ import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 
 interface MercadoPagoButtonProps {
   preferenceId: string | null;
-  MP_PUBLIC_KEY: string;
+  publicKey: string;
 }
 
-const MercadoPagoButton: React.FC<MercadoPagoButtonProps> = ({ preferenceId, MP_PUBLIC_KEY }) => {
-  if (MP_PUBLIC_KEY) {
-    initMercadoPago(MP_PUBLIC_KEY, {
+const MercadoPagoButton: React.FC<MercadoPagoButtonProps> = ({ preferenceId, publicKey }) => {
+  if (publicKey) {
+    initMercadoPago(publicKey, {
       locale: 'es-AR',
     });
   } else {
     console.error(
-      'Error: Mercado Pago Public Key (VITE_APP_MP_PUBLIC_KEY) is missing. ' +
+      'Error: Mercado Pago Public Key (publicKey) is missing. ' +
       'The Mercado Pago Button will not work correctly. ' +
       'Please ensure it is set in your .env file and the project is rebuilt if necessary.'
     );
@@ -46,7 +46,7 @@ const MercadoPagoButton: React.FC<MercadoPagoButtonProps> = ({ preferenceId, MP_
     // Or log detailed errors to your monitoring service.
   };
 
-  if (!MP_PUBLIC_KEY) {
+  if (!publicKey) {
     return (
       <div style={{ padding: '10px', border: '1px solid red', color: 'red', borderRadius: '4px' }}>
         Error de configuración: La clave pública de Mercado Pago no está disponible.

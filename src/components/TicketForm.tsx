@@ -7,11 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { createPreference, submitTicketForm } from '../services/api';
 import Spinner from './Spinner';
 import { toast } from 'sonner';
-import { cn, decryptAES256CBC, formatPrice } from '@/lib/utils';
+import { cn, formatPrice } from '@/lib/utils';
 import MercadoPagoButton from './MercadoPago';
 import SelectableCardList from './SelectablePrevents';
-
-const AES_KEY_HEX = import.meta.env.VITE_APP_AES_SECRET_KEY_HEX;
 
 interface TicketFormProps {
   event: Event;
@@ -29,6 +27,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('transferencia');
   const [selectedPreventId, setSelectedPreventId] = useState<number | null>(null);
   const [publicKey, setPublicKey] = useState<string>("");
+  const [isMpConfiguredForEvent, setIsMpConfiguredForEvent] = useState<boolean>(false);
 
   const activePrevents = useMemo(
     () => event.prevents.filter(p => p.status === PreventStatusEnum.ACTIVE),
@@ -56,6 +55,18 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
   const feeTotal = Math.round((totalPrice - baseTotal) * 100) / 100;
   const feePerService = Math.round((feeTotal / formData.participants.length) * 100) / 100;
 
+  useEffect(() => {
+    if (event.oAuthMercadoPago?.mpPublicKey) {
+      setIsMpConfiguredForEvent(true);
+    } else {
+      setIsMpConfiguredForEvent(false);
+      setPaymentMethod('transferencia');
+      if (paymentMethod === 'mercadopago') {
+        toast.error("Mercado Pago no está configurado para este evento. Se seleccionó Transferencia.");
+      }
+    }
+  }, [event.oAuthMercadoPago, paymentMethod]);
+
   const updateParticipant = (index: number, field: keyof Participant, value: string) => {
     const newParticipants = [...formData.participants];
     newParticipants[index] = { ...newParticipants[index], [field]: value };
@@ -65,20 +76,6 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
       participants: newParticipants
     });
   };
-
-  useEffect(() => {
-    async function doDecrypt() {
-      try {
-        console.log(event.mercadoPago?.publicKey, AES_KEY_HEX)
-        const decryptedPub = await decryptAES256CBC(event?.mercadoPago?.publicKey || '', AES_KEY_HEX);
-        console.log(decryptedPub)
-        setPublicKey(decryptedPub);
-      } catch (err) {
-        console.error("🔐 Decryption error:", err);
-      }
-    }
-    doDecrypt();
-  }, [event]);
 
   const handleTicketCountChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const count = parseInt(e.target.value);
@@ -184,8 +181,9 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
     }));
     try {
       const res = await createPreference(selectedPreventId!, updatedParticipants);
-      if (res.success && res.data.preferenceId) {
+      if (res.success) {
         setPreferenceId(res.data.preferenceId);
+        setPublicKey(res.data.publicKey);
       }
       if (!res.success) {
         toast.error(res.message);
@@ -384,16 +382,27 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
               />
               <span className="text-white">Transferencia</span>
             </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="payment"
-                checked={paymentMethod === 'mercadopago'}
-                onChange={() => setPaymentMethod('mercadopago')}
-                className="h-5 w-5 border bg-gray-800 rounded-none text-blue-800 focus:ring-2 focus:ring-blue-600"
-              />
-              <span className="text-white">MercadoPago</span>
-            </label>
+            {
+              isMpConfiguredForEvent && (
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="payment"
+                    checked={paymentMethod === 'mercadopago'}
+                    onChange={() => {
+                      if (!isMpConfiguredForEvent) {
+                        toast.error("Mercado Pago no está configurado para este evento.");
+                        setPaymentMethod('transferencia');
+                      } else {
+                        setPaymentMethod('mercadopago');
+                      }
+                    }}
+                    className="h-5 w-5 border bg-gray-800 rounded-none text-blue-800 focus:ring-2 focus:ring-blue-600"
+                  />
+                  <span className="text-white">MercadoPago</span>
+                </label>
+              )
+            }
           </div>
 
           {paymentMethod === 'transferencia' && (
@@ -431,7 +440,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
           {paymentMethod === 'mercadopago' && (
             <div className="text-center mt-4">
               <p className='italic text-xs text-blue-600 text-left'>Acreditación instantanea</p>
-              {!preferenceId ? (
+              {!preferenceId || !publicKey ? (
                 <div className="flex items-center mt-4 gap-4">
                   <Button
                     onClick={prevStep}
@@ -448,7 +457,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
                   </Button>
                 </div>
               ) : (
-                <MercadoPagoButton preferenceId={preferenceId} MP_PUBLIC_KEY={publicKey} />
+                <MercadoPagoButton preferenceId={preferenceId} publicKey={publicKey} />
               )}
             </div>
           )}

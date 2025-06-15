@@ -54,7 +54,7 @@ export interface Event {
   createdAt: string;
   updatedAt: string;
   prevents: Prevent[];
-  mercadoPago?: MercadoPagoConfigDto;
+  oAuthMercadoPago?: MercadoPagoConfigDto;
 }
 
 export interface Prevent {
@@ -115,15 +115,13 @@ export enum ClientTypeEnum {
 }
 
 export interface PreferenceData {
-  preferenceId: string
+  preferenceId: string;
+  publicKey: string;
 }
 
 export interface MercadoPagoConfigDto {
   id: number;
-  accountName: string;
-  publicKey: string;
-  accessToken: string;
-  webhookSecret: string;
-  updatedAt: string;
+  mpUserName: string;
+  mpPublicKey: string;
   createdAt: string;
 }

@@ -12,14 +12,15 @@ const Contact: React.FC<ContactProps> = ({ producer }) => {
         <div className="max-w-full mx-auto text-center">
           <h2 className="text-3xl font-bold text-white mb-8">Contactanos</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 items-center justify-center gap-4 md:gap-16">
+          {/* Changed from grid to flex, added flex-wrap and adjusted gap */}
+          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
             {/* Instagram */}
             {producer.instagram && (
               <a
                 href={`https://instagram.com/${producer.instagram}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-start w-full gap-3 text-gray-300 hover:text-white transition-colors group"
+                className="flex items-center justify-start w-full gap-3 text-gray-300 hover:text-white transition-colors group flex-grow md:flex-grow-0 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
               >
                 <div className="bg-gray-800 p-4 rounded-full group-hover:bg-gray-700 transition-colors">
                   <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
@@ -34,7 +35,7 @@ const Contact: React.FC<ContactProps> = ({ producer }) => {
             {producer.email && (
               <a
                 href={`mailto:${producer.email.email}`}
-                className="flex items-center justify-start w-full gap-3 text-gray-300 hover:text-white transition-colors group"
+                className="flex items-center justify-start w-full gap-3 text-gray-300 hover:text-white transition-colors group flex-grow md:flex-grow-0 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
               >
                 <div className="bg-gray-800 p-4 rounded-full group-hover:bg-gray-700 transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -51,7 +52,7 @@ const Contact: React.FC<ContactProps> = ({ producer }) => {
                 href={`https://wa.me/${producer.phone}?text=Hola,%20${producer.name}!%20Quiero%20info%20de%20sus%20eventos%20`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-start w-full gap-3 text-gray-300 hover:text-white transition-colors group"
+                className="flex items-center justify-start w-full gap-3 text-gray-300 hover:text-white transition-colors group flex-grow md:flex-grow-0 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
               >
                 <div className="bg-gray-800 p-4 rounded-full group-hover:bg-gray-700 transition-colors">
                   <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
@@ -67,7 +68,7 @@ const Contact: React.FC<ContactProps> = ({ producer }) => {
                 href={producer.youtube}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-start w-full gap-3 text-gray-300 hover:text-white transition-colors group"
+                className="flex items-center justify-start w-full gap-3 text-gray-300 hover:text-white transition-colors group flex-grow md:flex-grow-0 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
               >
                 <div className="bg-gray-800 p-4 rounded-full group-hover:bg-gray-700 transition-colors">
                   <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg">
@@ -83,7 +84,7 @@ const Contact: React.FC<ContactProps> = ({ producer }) => {
                 href={producer.tiktok}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-start w-full gap-3 text-gray-300 hover:text-white transition-colors group"
+                className="flex items-center justify-start w-full gap-3 text-gray-300 hover:text-white transition-colors group flex-grow md:flex-grow-0 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
               >
                 <div className="bg-gray-800 p-4 rounded-full group-hover:bg-gray-700 transition-colors">
                   <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">

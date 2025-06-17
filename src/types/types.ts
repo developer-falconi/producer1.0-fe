@@ -24,6 +24,7 @@ export interface Producer {
   instagram: string;
   youtube: string;
   tiktok: string;
+  spotify: string;
   phone: string;
   createdAt: string;
   updatedAt: string;

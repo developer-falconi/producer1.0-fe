@@ -24,8 +24,11 @@ const App: React.FC = () => {
   const [producer, setProducer] = useState<Producer | null>(null);
   const [activeEvent, setActiveEvent] = useState<Event | null>(null);
   const [showTicketForm, setShowTicketForm] = useState<boolean>(false);
+
   const ticketFormRef = useRef<HTMLDivElement>(null);
+
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | null>(null);
+  const [paymentEventId, setPaymentEventId] = useState<string | null>(null);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
   useEffect(() => {
@@ -75,11 +78,13 @@ const App: React.FC = () => {
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
     const status = q.get('collection_status') || q.get('status');
+    const eid = q.get('event');
 
     if (status) {
       const params: Record<string, string> = {};
       q.forEach((v, k) => (params[k] = v));
       setPaymentStatus({ status, params });
+      setPaymentEventId(eid);
       window.history.replaceState({}, document.title, window.location.pathname);
       setTimeout(() => {
         ticketFormRef.current!.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -92,6 +97,15 @@ const App: React.FC = () => {
     const timer = window.setTimeout(() => setPaymentStatus(null), 8000);
     return () => window.clearTimeout(timer);
   }, [paymentStatus]);
+
+  useEffect(() => {
+    if (paymentEventId && producer) {
+      const target = producer.events.find(e => e.id === parseInt(paymentEventId!));
+      if (target) {
+        setActiveEvent(target);
+      }
+    }
+  }, [paymentEventId, producer]);
 
   const toggleTicketForm = () => {
     if (paymentStatus || !activeEvent) return;

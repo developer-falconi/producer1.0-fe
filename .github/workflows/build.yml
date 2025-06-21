@@ -15,6 +15,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git for merge
+        run: |
+          git config user.email "developerfalconi@gmail.com"
+          git config user.name "developer-falconi"
+
+      - name: Sync with main (auto-resolve conflicts with main)
+        run: |
+          git fetch origin main
+          git merge origin/main --no-edit -X theirs
 
       - name: Set up Node
         uses: actions/setup-node@v4

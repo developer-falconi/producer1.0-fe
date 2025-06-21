@@ -23,10 +23,10 @@ jobs:
           git config user.email "developerfalconi@gmail.com"
           git config user.name "developer-falconi"
 
-      - name: Pull latest from main
+      - name: Sync with main (auto-resolve conflicts with main)
         run: |
           git fetch origin main
-          git merge origin/main --no-edit
+          git merge origin/main --no-edit -X theirs
 
       - name: Set up Node
         uses: actions/setup-node@v4

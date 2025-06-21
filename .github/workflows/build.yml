@@ -19,7 +19,7 @@ jobs:
       - name: Pull latest from main
         run: |
           git fetch origin main
-          git pull origin main
+          git merge origin/main --no-edit
 
       - name: Set up Node
         uses: actions/setup-node@v4

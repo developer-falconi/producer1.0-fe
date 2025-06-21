@@ -451,7 +451,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
                   <Button
                     onClick={handleGoToPay}
                     disabled={formData.email.length === 0}
-                    className="w-1/2 bg-green-800 hover:bg-green-700"
+                    className="w-1/2 bg-green-800 truncate hover:bg-green-700"
                   >
                     {isSubmitting ? 'Generando pago...' : 'Ir a pagar'}
                   </Button>

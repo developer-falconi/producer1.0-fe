@@ -164,7 +164,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ event, onGetTickets, prevent })
         toast.success("Entradas solicitadas. Una vez validado tu pago te las enviaremos por mail");
         resetAll();
       } else {
-        toast.error("Error enviando información");
+        toast.error(result.message || "Error enviando información");
       }
     } catch (error) {
       toast.error("Error enviando información");

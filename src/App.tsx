@@ -190,7 +190,7 @@ const App: React.FC = () => {
         <div className="min-h-screen w-full flex flex-col md:flex-row items-center justify-center pt-20 px-4 relative overflow-hidden">
           {/* Background image with overlay */}
           <div
-            className="absolute inset-0 bg-contain bg-center bg-no-repeat z-0 bg-black"
+            className="absolute inset-0 bg-cover bg-center z-0 bg-black"
             style={{
               backgroundImage: `url(${producer.logo})`,
               filter: 'brightness(0.3) contrast(1.2)'
